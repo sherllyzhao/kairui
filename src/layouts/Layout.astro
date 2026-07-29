@@ -1,12 +1,26 @@
+---
+import {requestData} from "../assets/js/jzt_common";
+
+let siteInfo = {
+	title: '山西凯瑞工业发展有限公司',
+	keywords: '山西凯瑞工业发展有限公司',
+	description: '山西凯瑞工业发展有限公司',
+	icon: ''
+};
+requestData('site', null, (res) => {
+	siteInfo = res;
+})
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>山西凯瑞工业发展有限公司</title>
-		<meta name="description" content="山西凯瑞工业发展有限公司">
-		<meta name="keywords" content="山西凯瑞工业发展有限公司">
+		<title>{siteInfo.title || '山西凯瑞工业发展有限公司'}</title>
+		<meta name="description" content={siteInfo.description || '山西凯瑞工业发展有限公司'}>
+		<meta name="keywords" content={siteInfo.keywords || '山西凯瑞工业发展有限公司'}>
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" href={siteInfo.icon || './favicon.ico'} />
 		<link rel="stylesheet" href="./css/animate.min.css">
 		<link rel="stylesheet" href="./css/common.css">
 		<link rel="stylesheet" href="./css/banner.css">

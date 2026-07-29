@@ -1,25 +1,69 @@
 ---
 import '../assets/css/header.scss';
-import {requestData} from "../assets/js/jzt_common";
+import {changeWebInfo, requestData} from "../assets/js/jzt_common";
+
+let pcLogo = '';
+let mobileLogo = '';
+requestData('site', null, (res) => {
+	pcLogo = res.pc_logo;
+	mobileLogo = res.phone_logo;
+})
 
 let navList = [];
+let aboutUs = [];
+let goods = [];
+let content = [];
+const navMap = {
+	'关于我们': '6a5d9b79d276c860d422cca0',
+	'产品展示': '6a5d9b8c64fdfb541468e9c2',
+	'新闻动态': '6a5d9ba1233ff835982878ea'
+}
 requestData('nav', {sort: 'sortAsc'}, res => {
-    console.log("🚀 ~  ~ res: ", res);
     navList = res.data || res;
+	// 获取关于我们
+	requestData('category', {sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}, about => {
+		aboutUs = about.data || [];
+		if(aboutUs.length > 0){
+			const aboutUsItem = navList.find(item => item.id === navMap['关于我们']);
+			if(aboutUsItem){
+				aboutUsItem["children"] = aboutUs.value;
+			}
+		}
+	})
+	// 获取产品
+	requestData('category', {sort: 'sortAsc', category_id: '6a605df319df9b3e2e2b4af2'}, goodsRes => {
+		goods = goodsRes.data || [];
+		if(goods.length > 0){
+			const goodsItem = navList.find(item => item.id === navMap['产品展示']);
+			if(goodsItem){
+				goodsItem["children"] = goods.value;
+			}
+		}
+	})
+	// 获取内容
+	requestData('category', {sort: 'sortAsc', category_id: '6a65771ba6ba0c2e856b11c8'}, contentRes => {
+		content = contentRes.data || [];
+		if(content.length > 0){
+			const contentItem = navList.find(item => item.id === navMap['新闻动态']);
+			if(contentItem){
+				contentItem["children"] = content.value;
+			}
+		}
+	})
 });
 ---
 <header class:list="[{scrolled: isScrolled}]">
 	<div class="header flex align-center justify-between">
 		<div class="logo flex align-center">
-			<!--<img :src="pcLogo" class="pc-logo" alt="">-->
-			<!--<img :src="mobileLogo" class="mobile-logo" alt="">-->
+			<img src={pcLogo} class="pc-logo" alt="">
+			<img src={mobileLogo} class="mobile-logo" alt="">
 		</div>
-		<!--<button :class="['mobile-menu-toggle', {open: mobileMenuOpen}]" type="button" :aria-expanded="mobileMenuOpen.toString()" aria-label="切换导航菜单" @click="mobileMenuOpen = !mobileMenuOpen">
+		<button class="mobile-menu-toggle" type="button" :aria-expanded="mobileMenuOpen.toString()" aria-label="切换导航菜单" @click="mobileMenuOpen = !mobileMenuOpen">
 			<span></span>
 			<span></span>
 			<span></span>
 		</button>
-		<div :class="['nav', 'f-h', 'flex', 'align-center', {open: mobileMenuOpen}]">
+		<!--<div :class="['nav', 'f-h', 'flex', 'align-center', {open: mobileMenuOpen}]">
 			<nav class="f-h">
 				<ul class="flex align-center justify-between first-nav f-h">
 					<li v-for="item in navList" :key="item.id" :class="[{active: '/' + lastPath === item.link}, 'relative', 'f-h', 'flex', 'align-center']">
