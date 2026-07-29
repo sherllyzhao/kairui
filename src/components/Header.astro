@@ -1,0 +1,45 @@
+---
+import '../assets/css/header.scss';
+import {requestData} from "../assets/js/jzt_common";
+
+let navList = [];
+requestData('nav', {sort: 'sortAsc'}, res => {
+    console.log("🚀 ~  ~ res: ", res);
+    navList = res.data || res;
+});
+---
+<header class:list="[{scrolled: isScrolled}]">
+	<div class="header flex align-center justify-between">
+		<div class="logo flex align-center">
+			<!--<img :src="pcLogo" class="pc-logo" alt="">-->
+			<!--<img :src="mobileLogo" class="mobile-logo" alt="">-->
+		</div>
+		<!--<button :class="['mobile-menu-toggle', {open: mobileMenuOpen}]" type="button" :aria-expanded="mobileMenuOpen.toString()" aria-label="切换导航菜单" @click="mobileMenuOpen = !mobileMenuOpen">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+		<div :class="['nav', 'f-h', 'flex', 'align-center', {open: mobileMenuOpen}]">
+			<nav class="f-h">
+				<ul class="flex align-center justify-between first-nav f-h">
+					<li v-for="item in navList" :key="item.id" :class="[{active: '/' + lastPath === item.link}, 'relative', 'f-h', 'flex', 'align-center']">
+						<a :href="'.' + item.link" @click="mobileMenuOpen = false">{{item.title}}</a>
+
+						&lt;!&ndash;   二级菜单   &ndash;&gt;
+						<div class="second-nav" v-if="item.children && item.children.length > 0">
+							<ul>
+								<li v-for="child in item.children" :key="child.id">
+									<a :href="'.' + item.link + '?category=' + child.id" @click="mobileMenuOpen = false">{{child.title}}</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</nav>
+			<a :href="(isEn ? '/' : '/en')" class="change-language-site flex align-center justify-center">
+				<span v-if="isEn">EN</span>
+				<span v-else>中文</span>
+			</a>
+		</div>-->
+	</div>
+</header>

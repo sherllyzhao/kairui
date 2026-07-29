@@ -1,0 +1,14 @@
+.tab {
+  font-size: clamp(14px, 0.833vw, 20px);
+  color: #FFFFFF;
+  gap: clamp(10px, 1.042vw, 30px); }
+  .tab .tab-item {
+    cursor: pointer; }
+    .tab .tab-item.active::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 4px;
+      background: #FF9600; }
+
+/*# sourceMappingURL=tabs.css.map */

@@ -1,0 +1,115 @@
+@charset "UTF-8";
+#brand {
+  padding: clamp(100px, 6.458vw, 140px) 0 clamp(100px, 7.03125vw, 150px); }
+  #brand .page-container {
+    gap: clamp(40px, 3.698vw, 80px); }
+    #brand .page-container .brand-info {
+      margin-top: clamp(50px, 3.90625vw, 90px);
+      font-weight: 400;
+      font-size: clamp(16px, 0.9375vw, 36px);
+      color: #0F0F0F;
+      line-height: 2; }
+    #brand .page-container .right {
+      width: clamp(600px, 38.385vw, 800px); }
+
+#advantages {
+  background-image: url("../img/advantage-bg.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: clamp(100px, 8.333vw, 200px) 0;
+  height: clamp(800px, 44.792vw, 1000px); }
+  #advantages .tab {
+    margin-top: clamp(60px, 3.802vw, 86px); }
+  #advantages .advantage-content {
+    margin-top: clamp(80px, 6.198vw, 160px);
+    font-weight: 400;
+    font-size: clamp(16px, 0.9375vw, 30px);
+    color: #FFFFFF;
+    line-height: clamp(30px, 2.083vw, 50px); }
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 42px, 0); }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0); } }
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready .reveal-on-scroll.is-visible {
+    animation: none; } }
+/* 关于页小屏布局：双栏内容改为纵向排列，避免平板横向挤压 */
+@media screen and (max-width: 1199px) {
+  #brand {
+    padding: 80px 0 96px; }
+
+  #brand .page-container {
+    flex-direction: column;
+    gap: 48px; }
+
+  #brand .page-container .left,
+  #brand .page-container .right {
+    width: 100%;
+    flex: 0 0 auto; }
+
+  #brand .page-container .brand-info {
+    margin-top: 40px;
+    font-size: 16px;
+    line-height: 1.9; }
+
+  #brand .page-container .right img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain; }
+
+  #advantages {
+    height: auto;
+    min-height: 720px;
+    padding: 88px 0; }
+
+  #advantages .tab {
+    margin-top: 48px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    white-space: nowrap;
+    scrollbar-width: none; }
+
+  #advantages .tab::-webkit-scrollbar {
+    display: none; }
+
+  #advantages .advantage-content {
+    margin-top: 64px;
+    font-size: 16px;
+    line-height: 1.9; } }
+/* 关于页移动端布局：收紧间距，保证正文和优势内容不被固定高度截断 */
+@media screen and (max-width: 767px) {
+  #brand {
+    padding: 64px 0 72px; }
+
+  #brand .page-container {
+    gap: 32px; }
+
+  #brand .page-container .brand-info {
+    margin-top: 32px;
+    font-size: 15px;
+    line-height: 1.9; }
+
+  #brand .page-container .right img {
+    max-height: none; }
+
+  #advantages {
+    min-height: 550px;
+    padding: 72px 0 80px; }
+
+  #advantages .tab {
+    gap: 22px;
+    margin-top: 36px; }
+
+  #advantages .advantage-content {
+    margin-top: 44px;
+    font-size: 14px;
+    line-height: 1.9; } }
+
+/*# sourceMappingURL=about.css.map */

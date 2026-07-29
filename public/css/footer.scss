@@ -1,0 +1,20 @@
+footer{
+  background: #2A2A2A;
+  padding: clamp(40px, 2.96875vw, 70px) 0;
+  font-size: clamp(14px, 0.833vw, 20px);
+  color: #E8E8E8;
+  line-height: 2;
+}
+
+@media screen and (max-width: 767px) {
+  footer {
+    padding: 28px 0;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  footer .page-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

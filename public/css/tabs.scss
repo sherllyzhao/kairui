@@ -1,0 +1,17 @@
+.tab {
+  font-size: clamp(14px, 0.833vw, 20px);
+  color: #FFFFFF;
+  gap: clamp(10px, 1.042vw, 30px);
+
+  .tab-item {
+    cursor: pointer;
+
+    &.active::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 4px;
+      background: #FF9600;
+    }
+  }
+}

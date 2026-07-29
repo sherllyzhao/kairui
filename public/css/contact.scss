@@ -1,0 +1,289 @@
+.contact-wrap {
+  background-color: #F7F7F7;
+  padding: clamp(100px, 6.458vw, 150px) 0 clamp(80px, 5.625vw, 120px);
+
+  hr {
+    border-color: rgba(0, 0, 0, 0.1);
+    margin-top: clamp(70px, 4.635vw, 100px);
+    margin-bottom: clamp(70px, 4.479vw, 100px);
+  }
+
+  .contact-list,
+  .contact-item {
+    gap: clamp(16px, 1.042vw, 26px);
+  }
+
+  .contact-list {
+    .contact-item {
+      .icon {
+        width: clamp(30px, 1.875vw, 42px);
+        height: clamp(30px, 1.875vw, 42px);
+        object-fit: contain;
+        flex: 0 0 auto;
+      }
+
+      .info {
+        min-width: 0;
+        font-weight: 400;
+        font-size: clamp(16px, 0.9375vw, 20px);
+        color: #404040;
+        line-height: 2;
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+}
+
+.contact-form {
+  background: #fff;
+  padding: clamp(100px, 6.198vw, 130px) 0 clamp(80px, 5.208vw, 120px);
+
+  .home-title{
+    margin-bottom: clamp(26px, 1.771vw, 40px);
+  }
+
+  .page-container {
+    margin-top: clamp(60px, 4.01vw, 86px);
+    gap: clamp(30px, 2.24vw, 54px);
+  }
+
+  .two-cols {
+    gap: clamp(20px, 1.823vw, 50px);
+  }
+
+  .form-item {
+    flex: 1;
+
+    label {
+      display: block;
+      margin-bottom: clamp(16px, 1.25vw, 30px);
+      font-weight: 400;
+      font-size: clamp(16px, 1.042vw, 26px);
+      color: #000000;
+    }
+
+    input,
+    textarea {
+      height: clamp(50px, 3.333vw, 70px);
+      background: #fff;
+      border: 1px solid #DDDDDD;
+      border-radius: 0;
+      width: 100%;
+      padding: clamp(16px, 1.042vw, 26px);
+      font: inherit;
+      font-weight: 400;
+      font-size: clamp(14px, 0.8333vw, 22px);
+      color: #000;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+      &::placeholder {
+        color: #707070;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #001E6A;
+        box-shadow: 0 0 0 3px rgba(0, 30, 106, 0.1);
+      }
+    }
+
+    textarea {
+      height: clamp(200px, 11.615vw, 250px);
+      resize: vertical;
+      min-height: 160px;
+    }
+
+    button {
+      height: clamp(50px, 3.333vw, 70px);
+      background: #001E6A;
+      font: inherit;
+      font-weight: 400;
+      font-size: clamp(16px, 1.146vw, 26px);
+      color: #E8E8E8;
+      display: block;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+
+      &:hover {
+        background-color: #082b85;
+        box-shadow: 0 8px 18px rgba(0, 30, 106, 0.16);
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:focus-visible {
+        outline: 3px solid rgba(0, 30, 106, 0.28);
+        outline-offset: 3px;
+      }
+    }
+  }
+}
+
+/* 联系页轻量动画：区块进入视口时播放一次，内容默认保持可见 */
+.reveal-on-scroll {
+  opacity: 1;
+  transform: none;
+}
+
+html.motion-ready .reveal-on-scroll.is-visible {
+  animation: contactSectionReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.motion-ready .contact-wrap.reveal-on-scroll.is-visible .contact-item {
+  animation: contactItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.motion-ready .contact-wrap.reveal-on-scroll.is-visible .contact-item:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+html.motion-ready .contact-wrap.reveal-on-scroll.is-visible .contact-item:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+html.motion-ready .contact-form.reveal-on-scroll.is-visible .page-container > * {
+  animation: contactItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.motion-ready .contact-form.reveal-on-scroll.is-visible .page-container > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+html.motion-ready .contact-form.reveal-on-scroll.is-visible .page-container > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+@keyframes contactSectionReveal {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 42px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes contactItemReveal {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 20px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready .reveal-on-scroll.is-visible,
+  html.motion-ready .contact-wrap.reveal-on-scroll.is-visible .contact-item,
+  html.motion-ready .contact-form.reveal-on-scroll.is-visible .page-container > * {
+    animation: none;
+  }
+
+  .contact-form .form-item input,
+  .contact-form .form-item textarea,
+  .contact-form .form-item button {
+    transition: none;
+  }
+}
+
+/* 平板：联系信息两列排列，表单保留双列以利用横向空间 */
+@media screen and (max-width: 1199px) {
+  .contact-wrap {
+    padding: 80px 0 88px;
+  }
+
+  .contact-wrap hr {
+    margin: 52px 0;
+  }
+
+  .contact-wrap .contact-list {
+    column-gap: 24px;
+    row-gap: 30px;
+  }
+
+  .contact-wrap .contact-list .contact-item {
+    width: calc(50% - 12px);
+  }
+
+  .contact-form {
+    padding: 80px 0 88px;
+  }
+
+  .contact-form .page-container {
+    margin-top: 0;
+    gap: 38px;
+  }
+}
+
+/* 移动端：信息单列，表单字段纵向排列，避免输入区域横向挤压 */
+@media screen and (max-width: 767px) {
+  .contact-wrap {
+    padding: 64px 0 72px;
+  }
+
+  .contact-wrap hr {
+    margin: 40px 0;
+  }
+
+  .contact-wrap .contact-list {
+    gap: 24px;
+  }
+
+  .contact-wrap .contact-list .contact-item {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .contact-wrap .contact-list .contact-item .icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .contact-wrap .contact-list .contact-item .info {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .contact-form {
+    padding: 64px 0 72px;
+  }
+
+  .contact-form .page-container {
+    gap: 28px;
+  }
+
+  .contact-form .two-cols {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .contact-form .form-item label {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  .contact-form .form-item input,
+  .contact-form .form-item textarea {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .contact-form .form-item textarea {
+    height: 180px;
+  }
+
+  .contact-form .form-item button {
+    height: 52px;
+    font-size: 16px;
+  }
+}

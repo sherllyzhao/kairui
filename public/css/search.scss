@@ -1,0 +1,284 @@
+.tips{
+  font-weight: 500;
+  font-size: 34px;
+  color: #FFFFFF;
+  text-align: center;
+  animation: searchContentIn 0.7s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.search-box{
+  margin-top: clamp(40px, 2.552vw, 60px);
+  width: min(940px, calc(100% - 64px));
+  height: clamp(40px, 3.073vw, 68px);
+  animation: searchContentIn 0.7s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  input{
+    border-radius: clamp(12px, 0.833vw, 20px) 0 0 clamp(12px, 0.833vw, 20px);
+    padding: 0 clamp(20px, 1.40625vw, 32px);
+    font-weight: 400;
+    font-size: clamp(14px, 0.833vw, 20px);
+    color: #000;
+    background-color: #EDEDED;
+    border: none;
+    outline: none;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+    &::placeholder{
+      color: #878787;
+    }
+    &:focus{
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(238, 146, 15, 0.35);
+    }
+  }
+  button{
+    border-radius: 0 clamp(12px, 0.833vw, 20px) clamp(12px, 0.833vw, 20px) 0;
+    background: #EE920F;
+    border: none;
+    width: clamp(60px, 4.01vw, 84px);
+    color: #FFFFFF;
+    font-size: clamp(14px, 0.833vw, 20px);
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+    &:hover{
+      background-color: #D87E08;
+      transform: translateX(2px);
+    }
+    &:active{
+      transform: translateX(2px) scale(0.97);
+    }
+  }
+}
+.search-result-wrap{
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  padding: 24px;
+  background: rgba(14, 28, 44, 0.68);
+  animation: searchFadeIn 0.25s ease both;
+  .search-result-dialog{
+    width: min(940px, 100%);
+    height: min(680px, calc(100svh - 48px));
+    min-height: 360px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+    animation: searchDialogIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    .dialog-header{
+      border-bottom: 1px solid rgba(16, 62, 111, 0.1);
+      .dialog-title{
+        height: clamp(70px, 4.01vw, 90px);
+        font-weight: 500;
+        font-size: clamp(18px, 1.146vw, 26px);
+        color: #3C3C3C;
+      }
+      .dialog-close{
+        right: clamp(24px, 1.354vw, 36px);
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #3C3C3C;
+        line-height: 1;
+        transition: color 0.2s ease, transform 0.2s ease;
+        &:hover{
+          color: #EE920F;
+          transform: translateY(-50%) rotate(90deg);
+        }
+        b{
+          display: block;
+          font-size: 30px;
+          font-weight: 300;
+        }
+      }
+    }
+    .dialog-header, .dialog-body{
+      padding: 0 clamp(10px, 1.042vw, 30px);
+    }
+    .dialog-body{
+      .result-list{
+        max-height: clamp(300px, 25.52vh, 450px);
+        overflow-y: auto;
+        padding: clamp(10px, 1.40625vw, 30px) 0;
+        overscroll-behavior: contain;
+      }
+      .result-item{
+        min-height: 48px;
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(16, 62, 111, 0.08);
+        animation: resultItemIn 0.35s ease both;
+        @for $i from 1 through 10 {
+          &:nth-child(#{$i}){
+            animation-delay: #{($i - 1) * 0.04}s;
+          }
+        }
+        &:last-child{
+          border-bottom: none;
+        }
+      }
+      .result-name{
+        min-height: 28px;
+        color: #3C3C3C;
+        font-size: 16px;
+        text-align: center;
+      }
+      .product-empty{
+        min-height: 260px;
+        color: #878787;
+      }
+    }
+  }
+}
+
+@keyframes searchFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes searchContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes searchDialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes resultItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .tips{
+    font-size: 30px;
+  }
+
+  .search-box{
+    margin-top: 40px;
+    height: 56px;
+  }
+
+  .search-result-dialog{
+    .dialog-header .dialog-title{
+      height: 72px;
+      font-size: 22px;
+    }
+
+    .dialog-header, .dialog-body{
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  banner-app{
+    min-height: calc(100svh - 76px);
+  }
+  .banner,
+  .banner-image{
+    height: calc(100svh - 76px);
+    min-height: 420px;
+  }
+
+  .tips{
+    max-width: calc(100% - 32px);
+    font-size: 24px;
+  }
+
+  .search-box{
+    width: calc(100% - 32px);
+    height: 48px;
+    margin-top: 28px;
+    input{
+      min-width: 0;
+      padding: 0 14px;
+      font-size: 14px;
+    }
+    button{
+      width: 68px;
+      flex: 0 0 68px;
+      font-size: 14px;
+    }
+  }
+
+  .search-result-wrap{
+    padding: 16px;
+    align-items: center;
+    .search-result-dialog{
+      width: 100%;
+      height: min(620px, calc(100svh - 32px));
+      min-height: 320px;
+      .dialog-header .dialog-title{
+        height: 62px;
+        font-size: 20px;
+      }
+      .dialog-header, .dialog-body{
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .dialog-header .dialog-close{
+        right: 16px;
+        b{
+          font-size: 26px;
+        }
+      }
+      .dialog-body .result-list{
+        max-height: calc(100svh - 150px);
+        padding: 12px 0;
+      }
+      .dialog-body .result-item{
+        min-height: 44px;
+        padding: 8px 10px;
+      }
+      .dialog-body .product-empty{
+        min-height: 180px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .search-result-wrap{
+    padding: 10px;
+    .search-result-dialog{
+      height: calc(100svh - 20px);
+      border-radius: 8px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tips,
+  .search-box,
+  .search-result-wrap,
+  .search-result-dialog,
+  .result-item{
+    animation: none !important;
+  }
+
+  .search-box input,
+  .search-box button,
+  .dialog-close{
+    transition: none !important;
+  }
+}

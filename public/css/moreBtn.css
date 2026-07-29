@@ -1,0 +1,19 @@
+.more-btn {
+  width: clamp(150px, 8.854vw, 200px);
+  height: clamp(50px, 3.229vw, 70px);
+  border-radius: clamp(25px, 1.615vw, 35px) clamp(25px, 1.615vw, 35px) 0 clamp(25px, 1.615vw, 35px);
+  background: #001E6A;
+  font-size: clamp(14px, 0.833vw, 20px);
+  color: #F8F8F8;
+  font-weight: 400;
+  display: inline-flex;
+  gap: clamp(20px, 1.823vw, 45px); }
+  .more-btn::after {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: #EDEDED;
+    border-radius: 50%; }
+
+/*# sourceMappingURL=moreBtn.css.map */
