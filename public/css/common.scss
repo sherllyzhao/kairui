@@ -7,7 +7,7 @@
     --lines: 3;
 }
 html, body{
-    font-family: SourceHanSansCN;
+    font-family: 'SourceHanSansCN', 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
 }
 li{
     list-style: none;
@@ -24,14 +24,18 @@ a {
 
 @font-face {
     font-family: 'SourceHanSansCN';
-    src: url('../font/SourceHanSansCN-Regular.ttf') format('opentype');
+    src: url('../font/SourceHanSansCN-Regular.woff2') format('woff2');
     font-style: normal;
+    font-weight: 400;
+    font-display: swap;
 }
 
 @font-face {
     font-family: 'CTWeiBeiSJ';
-    src: url('../font/CTWeiBeiSJ-tiny.ttf') format('opentype');
+    src: url('../font/CTWeiBeiSJ-tiny.woff2') format('woff2');
     font-style: normal;
+    font-weight: 400;
+    font-display: swap;
 }
 
 .flex{
