@@ -1,7 +1,7 @@
 ---
-const {href, text} = props;
+const {href = 'javascript:void(0);', text = '了解更多'} = props;
 ---
 
-<a :href="href" class="more-btn relative flex align-center justify-center">
+<a href={href} class="more-btn relative flex align-center justify-center">
 	<span>{{text}}</span>
 </a>
