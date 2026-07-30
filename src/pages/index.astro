@@ -2,16 +2,78 @@
 import Layout from '../layouts/Layout.astro';
 import Header from "../components/Header.astro";
 import Banner from "../components/Banner.astro";
+import HomeTitle from "../components/HomeTitle.astro";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-    <link rel="stylesheet" href="/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="./css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="./css/homeTitle.css">
+    <link rel="stylesheet" href="./css/index.css">
 
     <Header />
     <Banner id="6a5d9b5c69cfc1547e06c7d1" />
+    <div class="production-list reveal-on-scroll">
+        <div class="page-container flex justify-between">
+            <div class="home-section-desktop">
+                <div class="left relative">
+                    <HomeTitle title="产品展示" subtitle="core product line"></HomeTitle>
+                    <p class="description">专注高端工业轴承的研发、生产与应用配套</p>
+                    <div class="swiper-btn flex justify-between align-center">
+                        <div class="swiper-button-prev">
+                            <img src="./img/arrow2.png" alt="">
+                        </div>
+                        <div class="swiper-button-next">
+                            <img src="./img/arrow2.png" alt="">
+                        </div>
+                    </div>
+                    <!--<more-btn-app :href="'./product.html'"></more-btn-app>-->
+                </div>
+                <!--<div class="right flex-1">
+                    <div class="product-swiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide relative interactive-card" v-for="item in productList" :key="item.id">
+                                <img :src="item.image_intro" alt="">
+                                <div class="cate-info absolute">
+                                    <h5 class="cate-name">{{item.title}}</h5>
+                                    <p class="cate-desc">{{item.description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination flex align-center">
+                        <div :class="['swiper-pagination-box', 'relative', 'cursor-pointer', {active: index === productRealIndex}]"
+                             v-for="(item, index) in productList" :key="item.id"
+                             :data-index="(index + 1).toString().padStart(2, '0')" @click="changeProductIndex(index)">
+                            <span>{{item.title}}</span>
+                        </div>
+                        <div class="swiper-pagination-box relative cursor-pointer">
+                            <span><a href="./product.html">更多产品分类</a></span>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
+            <!--<div class="home-section-mobile product-mobile">
+                <div class="mobile-section-heading">
+                    <p>CORE PRODUCT LINE</p>
+                    <h2>产品展示</h2>
+                </div>
+                <p class="product-mobile__intro">专注高端工业轴承的研发、生产与应用配套</p>
+                <div class="product-mobile__list">
+                    <a class="product-mobile__card" href="./product.html" v-for="item in productList" :key="item.id">
+                        <img v-if="item.image_intro" :src="item.image_intro" :alt="item.title">
+                        <div>
+                            <h3>{{item.title}}</h3>
+                            <p class="hide-more-text" style="&#45;&#45;lines: 2;">{{item.description}}</p>
+                        </div>
+                    </a>
+                </div>
+                <a class="mobile-text-link" href="./product.html">浏览全部产品 <span aria-hidden="true">→</span></a>
+            </div>-->
+        </div>
+    </div>
 
     <script is:inline src="./js/swiper-bundle.min.js"></script>
 </Layout>

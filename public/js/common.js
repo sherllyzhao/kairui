@@ -78,3 +78,45 @@ statistics();
     }
     window.addEventListener('load', scanAll);
 })();
+
+document.documentElement.classList.add('motion-ready');
+
+// 页面区块进入和离开视口时切换动画状态
+const setupScrollReveal = () => {
+    const revealElements = Array.from(document.querySelectorAll('.reveal-on-scroll'));
+    if (revealElements.length === 0) return;
+
+    const updateRevealState = (element, isVisible) => {
+        element.classList.toggle('is-visible', isVisible);
+    };
+
+    const revealVisibleElements = () => {
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        revealElements.forEach(element => {
+            const rect = element.getBoundingClientRect();
+            const isVisible = rect.top < viewportHeight * 0.88
+                && rect.bottom > viewportHeight * 0.12;
+            updateRevealState(element, isVisible);
+        });
+    };
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                updateRevealState(entry.target, entry.isIntersecting);
+            });
+        }, {rootMargin: '-12% 0px -12% 0px', threshold: 0.01});
+
+        revealElements.forEach(element => observer.observe(element));
+    }
+
+    // 首屏立即检查，并用 scroll 事件兼容 Observer 未触发的环境
+    revealVisibleElements();
+    window.addEventListener('scroll', revealVisibleElements, {passive: true});
+    window.addEventListener('resize', revealVisibleElements, {passive: true});
+};
+if (window.requestAnimationFrame) {
+    window.requestAnimationFrame(setupScrollReveal);
+} else {
+    window.setTimeout(setupScrollReveal, 0);
+}
