@@ -1,0 +1,102 @@
+---
+import {requestData} from "../assets/js/jzt_common";
+const {id} = Astro.props;
+
+let bannerList = [];
+let navInfo = {};
+let bannerTotal = 0;
+let bannerImg = '';
+let bannerType = 'banner';
+try {
+  const bannerRes = await requestData('nav', {id});
+  console.log("🚀 ~  ~ bannerRes: ", bannerRes);
+  navInfo = bannerRes?.data?.[0];
+  bannerList = navInfo?.swiper?.split(',') ?? [];
+  bannerTotal = Number(bannerRes.total) || bannerList.length;
+  bannerImg = navInfo.banner;
+  bannerType = bannerList.length > 0 ? 'swiper' : 'banner';
+} catch (e) {
+  console.log(e, 'bannerRes')
+}
+---
+
+{bannerType === 'swiper' ?
+<div class="banner relative">
+	<div class="swiper-wrapper">
+      {
+        bannerList.map(item =>
+				<div class="swiper-slide">
+					<img class="banner-image" src={item} alt="">
+				</div>)
+      }
+	</div>
+	<div class="pagination-splitter absolute">
+		<div class="swiper-pagination-box">
+			<div class="swiper-pagination-box-content flex">
+				<div class="now-page">01</div>
+				<div class="total-page">{bannerTotal.toString().padStart(2, '0')}</div>
+			</div>
+		</div>
+	</div>
+	<div class="swiper-button-next">
+		<img src="./img/right-arraw.png" alt="">
+	</div>
+	<div class="swiper-button-prev">
+		<img src="./img/left-arraw.png" alt="">
+	</div>
+	<div class="swiper-pagination"></div>
+</div> :
+<div class="banner-image">
+	<!--<slot v-if="hasDefaultSlot"></slot>
+	<div v-else class="banner-image-content flex align-center justify-center flex-column f-h">
+		<h2>{{navInfo.title}}</h2>
+		<h4>{{navInfo.enTitle}}</h4>
+	</div>-->
+</div>}
+
+<script>
+  function animateBannerSlide(swiper) {
+    if (!$('.banner').length > 0) return;
+
+    $.each($('.banner').find('.banner-image.banner-zoom-in'), (index, image) => {
+		$(image).removeClass('banner-zoom-in')
+	});
+
+    const activeSlide = swiper.slides[swiper.activeIndex];
+    const activeImage = activeSlide && activeSlide.querySelector('.banner-image');
+    if (!activeImage) return;
+
+    void activeImage.offsetWidth;
+    activeImage.classList.add('banner-zoom-in');
+  }
+
+  (function () {
+    if ($('.banner').length > 0) {
+      let bannerRealIndex = 0;
+      let bannerSwiper = new Swiper('.banner', {
+        loop: true,
+        autoplay: {
+          delay: 6000,
+          disableOnInteraction: false,
+        },
+        navigation: {
+          nextEl: '.banner .swiper-button-next',
+          prevEl: '.banner .swiper-button-prev',
+        },
+        pagination: {
+          el: '.banner .swiper-pagination',
+          clickable: true,
+        },
+      });
+
+      animateBannerSlide(bannerSwiper);
+      bannerSwiper.on('slideChangeTransitionStart', () => {
+        animateBannerSlide(bannerSwiper);
+      });
+      bannerSwiper.on('slideChange', () => {
+        bannerRealIndex = bannerSwiper.realIndex;
+      });
+    }
+  })()
+  // $('.banner .now-page')
+</script>
