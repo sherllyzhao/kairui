@@ -1,0 +1,27 @@
+---
+const {tabs = []} = Astro.props;
+---
+
+<link rel="stylesheet" href="./css/tabs.css">
+<div class="tab flex align-center">
+  {
+    tabs.map((item, index) => {
+      return <div class="tab-item relative" key={item.id} data-index={index}>
+        <span>{item.title}</span>
+      </div>
+    })
+  }
+</div>
+
+<script>
+    const tabItems = document.querySelectorAll('.tab-item');
+    tabItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        tabItems.forEach(item => item.classList.remove('active'));
+        item.classList.add('active');
+        window.dispatchEvent(new CustomEvent('tab-change', {
+          detail: { activeIndex: index }
+        }));
+      });
+    });
+</script>

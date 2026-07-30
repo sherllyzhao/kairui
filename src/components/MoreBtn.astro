@@ -2,6 +2,7 @@
 const {href = 'javascript:void(0);', text = '了解更多'} = Astro.props;
 ---
 
+<link rel="stylesheet" href="./css/moreBtn.css">
 <a href={href} class="more-btn relative flex align-center justify-center">
-	<span>{{text}}</span>
+	<span>{text}</span>
 </a>

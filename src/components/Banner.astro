@@ -9,10 +9,9 @@ let bannerImg = '';
 let bannerType = 'banner';
 try {
   const bannerRes = await requestData('nav', {id});
-  console.log("🚀 ~  ~ bannerRes: ", bannerRes);
   navInfo = bannerRes?.data?.[0];
   bannerList = navInfo?.swiper?.split(',') ?? [];
-  bannerTotal = Number(bannerRes.total) || bannerList.length;
+  bannerTotal = bannerList.length;
   bannerImg = navInfo.banner;
   bannerType = bannerList.length > 0 ? 'swiper' : 'banner';
 } catch (e) {
@@ -72,7 +71,6 @@ try {
 
   (function () {
     if ($('.banner').length > 0) {
-      let bannerRealIndex = 0;
       let bannerSwiper = new Swiper('.banner', {
         loop: true,
         autoplay: {
@@ -94,9 +92,8 @@ try {
         animateBannerSlide(bannerSwiper);
       });
       bannerSwiper.on('slideChange', () => {
-        bannerRealIndex = bannerSwiper.realIndex;
+		$('.now-page').text((bannerSwiper.realIndex + 1).toString().padStart(2, '0'));
       });
     }
   })()
-  // $('.banner .now-page')
 </script>

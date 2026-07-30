@@ -46,7 +46,13 @@
       width: 55%; }
       .production-list .page-container .right .product-swiper {
         overflow: hidden;
-        height: clamp(400px, 29.167vw, 640px); }
+        height: clamp(400px, 29.167vw, 640px);
+        padding-top: clamp(20px, 1.563vw, 36px);
+        margin-top: calc(clamp(20px, 1.563vw, 36px) * -1); }
+        .production-list .page-container .right .product-swiper .swiper-slide {
+          overflow: visible; }
+          .production-list .page-container .right .product-swiper .swiper-slide.interactive-card:hover {
+            z-index: 1; }
         .production-list .page-container .right .product-swiper img {
           width: auto;
           height: 100%; }
@@ -154,8 +160,12 @@
         color: #212121;
         cursor: pointer;
         white-space: nowrap; }
+        .case .left .case-tab .tab-item i {
+          display: none; }
         .case .left .case-tab .tab-item.active {
           color: #001E6A; }
+          .case .left .case-tab .tab-item.active i {
+            display: inline-block; }
     .case .left .more-btn {
       margin-top: clamp(100px, 8.073vw, 200px); }
   .case .right-box {
@@ -891,16 +901,13 @@ html.motion-ready .reveal-on-scroll.is-visible {
   white-space: nowrap; }
 
 /* 首页新闻：移动端采用独立卡片列表，避免复用桌面 Swiper 的错位布局。 */
-.news-mobile {
-  display: none; }
-
+.news-mobile,
 .home-section-mobile {
   display: none; }
 
 @media screen and (min-width: 768px) {
   .home-section-desktop {
     display: contents; } }
-
 @media screen and (max-width: 767px) {
   .home-section-desktop {
     display: none; }
@@ -914,15 +921,12 @@ html.motion-ready .reveal-on-scroll.is-visible {
     font-weight: 700;
     letter-spacing: 0.08em;
     line-height: 1.2; }
-
   .mobile-section-heading h2 {
     margin-top: 9px;
     color: #111827;
     font-size: 29px;
     line-height: 1.25; }
-
-  .mobile-section-heading--light p,
-  .mobile-section-heading--light h2 {
+  .mobile-section-heading--light p, .mobile-section-heading--light h2 {
     color: #fff; }
 
   .mobile-segment {
@@ -932,30 +936,25 @@ html.motion-ready .reveal-on-scroll.is-visible {
     padding-bottom: 10px;
     overflow-x: auto;
     scrollbar-width: none; }
-
-  .mobile-segment::-webkit-scrollbar {
-    display: none; }
-
-  .mobile-segment button {
-    flex: 0 0 auto;
-    padding: 0 0 9px;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    color: #6b7280;
-    font: 700 14px/1.2 inherit;
-    white-space: nowrap; }
-
-  .mobile-segment button.active {
-    border-bottom-color: #f59a23;
-    color: #001e6a; }
-
-  .mobile-segment--light button {
-    color: rgba(255, 255, 255, 0.66); }
-
-  .mobile-segment--light button.active {
-    border-bottom-color: #ff9600;
-    color: #fff; }
+    .mobile-segment::-webkit-scrollbar {
+      display: none; }
+    .mobile-segment button {
+      flex: 0 0 auto;
+      padding: 0 0 9px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: #6b7280;
+      font: 700 14px/1.2 inherit;
+      white-space: nowrap; }
+      .mobile-segment button.active {
+        border-bottom-color: #f59a23;
+        color: #001e6a; }
+    .mobile-segment--light button {
+      color: rgba(255, 255, 255, 0.66); }
+    .mobile-segment--light button.active {
+      border-bottom-color: #ff9600;
+      color: #fff; }
 
   .mobile-text-link {
     display: inline-flex;
@@ -965,18 +964,17 @@ html.motion-ready .reveal-on-scroll.is-visible {
     color: #001e6a;
     font-size: 14px;
     font-weight: 700; }
-
-  .mobile-text-link span {
-    font-size: 18px;
-    line-height: 1; }
-
-  .mobile-text-link--light {
-    color: #fff; }
+    .mobile-text-link span {
+      font-size: 18px;
+      line-height: 1; }
+    .mobile-text-link--light {
+      color: #fff; }
 
   .production-list {
     padding: 60px 0 64px; }
+    .production-list .page-container {
+      display: block; }
 
-  .production-list .page-container,
   .brand-introduction .page-container,
   .case .page-container {
     display: block; }
@@ -987,43 +985,54 @@ html.motion-ready .reveal-on-scroll.is-visible {
     font-size: 15px;
     line-height: 1.75; }
 
+  .product-mobile__list {
+    display: grid;
+    grid-auto-columns: minmax(248px, 78vw);
+    grid-auto-flow: column;
+    gap: 14px;
+    margin-top: 26px;
+    padding: 0 16px 4px 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; }
+    .product-mobile__list::-webkit-scrollbar {
+      display: none; }
+
   .product-mobile__card {
     position: relative;
-    min-height: 318px;
-    margin-top: 26px;
+    min-height: 282px;
     overflow: hidden;
     border-radius: 18px;
-    background: #001e6a; }
+    background: #001e6a;
+    scroll-snap-align: start; }
+    .product-mobile__card::after {
+      position: absolute;
+      inset: 38% 0 0;
+      content: '';
+      background: linear-gradient(180deg, transparent, rgba(0, 20, 72, 0.9)); }
+    .product-mobile__card > img {
+      width: 100%;
+      height: 282px;
+      object-fit: cover; }
+    .product-mobile__card > div {
+      position: absolute;
+      z-index: 1;
+      right: 20px;
+      bottom: 20px;
+      left: 20px;
+      color: #fff; }
+    .product-mobile__card h3 {
+      font-size: 20px;
+      line-height: 1.35; }
+    .product-mobile__card p {
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 13px;
+      line-height: 1.6; }
 
-  .product-mobile__card::after {
-    position: absolute;
-    inset: 38% 0 0;
-    content: '';
-    background: linear-gradient(180deg, transparent, rgba(0, 20, 72, 0.9)); }
-
-  .product-mobile__card > img {
-    width: 100%;
-    height: 318px;
-    object-fit: cover; }
-
-  .product-mobile__card > div {
-    position: absolute;
-    z-index: 1;
-    right: 20px;
-    bottom: 20px;
-    left: 20px;
-    color: #fff; }
-
-  .product-mobile__card h3,
   .case-mobile__card h3 {
     font-size: 20px;
     line-height: 1.35; }
-
-  .product-mobile__card p {
-    margin-top: 8px;
-    color: rgba(255, 255, 255, 0.82);
-    font-size: 13px;
-    line-height: 1.6; }
 
   .brand-introduction {
     height: auto;
@@ -1040,43 +1049,37 @@ html.motion-ready .reveal-on-scroll.is-visible {
     border-radius: 16px;
     background: rgba(0, 22, 75, 0.35);
     backdrop-filter: blur(8px); }
-
-  .brand-mobile__content h3 {
-    color: #fff;
-    font-size: 21px;
-    line-height: 1.35; }
-
-  .brand-mobile__content > p {
-    margin-top: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    line-height: 1.8; }
+    .brand-mobile__content h3 {
+      color: #fff;
+      font-size: 21px;
+      line-height: 1.35; }
+    .brand-mobile__content > p {
+      margin-top: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      line-height: 1.8; }
 
   .case {
     padding: 64px 0; }
-
-  .case-mobile__card {
-    margin-top: 22px;
-    overflow: hidden;
-    border-radius: 18px;
-    background: #001e6a;
-    box-shadow: 0 14px 32px rgba(0, 30, 106, 0.16); }
-
-  .case-mobile__card > img {
-    display: block;
-    width: 100%;
-    height: 218px;
-    object-fit: cover; }
-
-  .case-mobile__card > div {
-    padding: 20px;
-    color: #fff; }
-
-  .case-mobile__card p {
-    margin-top: 10px;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 14px;
-    line-height: 1.65; }
+    .case-mobile__card {
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #001e6a;
+      box-shadow: 0 14px 32px rgba(0, 30, 106, 0.16); }
+      .case-mobile__card > img {
+        display: block;
+        width: 100%;
+        height: 218px;
+        object-fit: cover; }
+      .case-mobile__card > div {
+        padding: 20px;
+        color: #fff; }
+      .case-mobile__card p {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 14px;
+        line-height: 1.65; }
 
   .case2 {
     padding: 64px 0; }
@@ -1095,35 +1098,29 @@ html.motion-ready .reveal-on-scroll.is-visible {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.12); }
-
-  .solution-mobile__card:nth-child(2n) {
-    background: rgba(0, 30, 106, 0.34); }
-
-  .solution-mobile__card h3 {
-    color: #fff;
-    font-size: 17px;
-    line-height: 1.4; }
-
-  .solution-mobile__card p {
-    margin-top: 10px;
-    color: rgba(255, 255, 255, 0.72);
-    font-size: 12px;
-    line-height: 1.55; }
-
-  .solution-mobile__card span {
-    position: absolute;
-    right: 16px;
-    bottom: 14px;
-    color: #ffb142;
-    font-size: 20px;
-    line-height: 1; }
+    .solution-mobile__card:nth-child(2n) {
+      background: rgba(0, 30, 106, 0.34); }
+    .solution-mobile__card h3 {
+      color: #fff;
+      font-size: 17px;
+      line-height: 1.4; }
+    .solution-mobile__card p {
+      margin-top: 10px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      line-height: 1.55; }
+    .solution-mobile__card span {
+      position: absolute;
+      right: 16px;
+      bottom: 14px;
+      color: #ffb142;
+      font-size: 20px;
+      line-height: 1; }
 
   .news .page-container {
     padding: 58px 0 64px; }
-
   .news-desktop {
     display: none; }
-
   .news-mobile {
     display: block; }
 
@@ -1132,14 +1129,12 @@ html.motion-ready .reveal-on-scroll.is-visible {
     line-height: 1.2;
     color: #111;
     letter-spacing: 0.02em; }
-
   .news-mobile__heading p {
     margin-top: 8px;
     font-size: 13px;
     line-height: 1;
     color: #777;
     letter-spacing: 0.04em; }
-
   .news-mobile__tabs {
     display: flex;
     gap: 24px;
@@ -1147,29 +1142,24 @@ html.motion-ready .reveal-on-scroll.is-visible {
     padding-bottom: 10px;
     overflow-x: auto;
     scrollbar-width: none; }
-
-  .news-mobile__tabs::-webkit-scrollbar {
-    display: none; }
-
-  .news-mobile__tabs button {
-    flex: 0 0 auto;
-    padding: 0 0 8px;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    color: #777;
-    font: 700 15px/1.2 inherit;
-    white-space: nowrap; }
-
-  .news-mobile__tabs button.active {
-    border-bottom-color: #001e6a;
-    color: #001e6a; }
-
+    .news-mobile__tabs::-webkit-scrollbar {
+      display: none; }
+    .news-mobile__tabs button {
+      flex: 0 0 auto;
+      padding: 0 0 8px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: #777;
+      font: 700 15px/1.2 inherit;
+      white-space: nowrap; }
+      .news-mobile__tabs button.active {
+        border-bottom-color: #001e6a;
+        color: #001e6a; }
   .news-mobile__list {
     display: grid;
     gap: 16px;
     margin-top: 22px; }
-
   .news-mobile__card {
     display: grid;
     grid-template-columns: 112px minmax(0, 1fr);
@@ -1178,44 +1168,37 @@ html.motion-ready .reveal-on-scroll.is-visible {
     border-radius: 16px;
     background: #fff;
     box-shadow: 0 10px 28px rgba(0, 30, 106, 0.09); }
-
-  .news-mobile__card > img {
-    width: 112px;
-    height: 100%;
-    min-height: 142px;
-    object-fit: cover; }
-
+    .news-mobile__card > img {
+      width: 112px;
+      height: 100%;
+      min-height: 142px;
+      object-fit: cover; }
   .news-mobile__card-content {
     position: relative;
     min-width: 0;
     padding: 17px 38px 17px 17px; }
-
-  .news-mobile__card-content time {
-    display: block;
-    color: #001e6a;
-    font-size: 12px;
-    line-height: 1.2; }
-
-  .news-mobile__card-content h3 {
-    margin-top: 9px;
-    color: #161616;
-    font-size: 16px;
-    line-height: 1.45; }
-
-  .news-mobile__card-content p {
-    margin-top: 7px;
-    color: #777;
-    font-size: 13px;
-    line-height: 1.5; }
-
-  .news-mobile__card-content span {
-    position: absolute;
-    right: 16px;
-    bottom: 15px;
-    color: #001e6a;
-    font-size: 20px;
-    line-height: 1; }
-
+    .news-mobile__card-content time {
+      display: block;
+      color: #001e6a;
+      font-size: 12px;
+      line-height: 1.2; }
+    .news-mobile__card-content h3 {
+      margin-top: 9px;
+      color: #161616;
+      font-size: 16px;
+      line-height: 1.45; }
+    .news-mobile__card-content p {
+      margin-top: 7px;
+      color: #777;
+      font-size: 13px;
+      line-height: 1.5; }
+    .news-mobile__card-content span {
+      position: absolute;
+      right: 16px;
+      bottom: 15px;
+      color: #001e6a;
+      font-size: 20px;
+      line-height: 1; }
   .news-mobile__more {
     display: inline-flex;
     gap: 8px;
@@ -1224,11 +1207,9 @@ html.motion-ready .reveal-on-scroll.is-visible {
     color: #001e6a;
     font-size: 14px;
     font-weight: 700; }
-
-  .news-mobile__more span {
-    font-size: 18px;
-    line-height: 1; } }
-
+    .news-mobile__more span {
+      font-size: 18px;
+      line-height: 1; } }
 /* 品牌介绍小屏操作区避免与更多按钮重叠 */
 @media screen and (max-width: 1199px) {
   .brand-introduction .tab-panel .swiper-btn {

@@ -4,14 +4,22 @@ import Header from "../components/Header.astro";
 import Banner from "../components/Banner.astro";
 import HomeTitle from "../components/HomeTitle.astro";
 import MoreBtn from "../components/MoreBtn.astro";
+import {requestData} from "../assets/js/jzt_common";
+import Tabs from "../components/Tabs.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const [productRes, brandRes, caseRes] = await Promise.all([
+    requestData('category', {type: 'goods', sort: 'sortAsc'}),
+    requestData('category', {type: 'text', sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
+    requestData('goods', {sort: 'sortAsc', category_id: '6a606770c2f86d512a7f5bd0'})
+]);
+
+const productList = productRes?.data?.slice(0, 4);
+const brandTabs = brandRes?.data?.filter(item => item.showInHome);
+const caseList = caseRes?.data?.slice(0, 3);
 ---
 
 <Layout>
     <link rel="stylesheet" href="./css/swiper-bundle.min.css">
-    <link rel="stylesheet" href="./css/homeTitle.css">
     <link rel="stylesheet" href="./css/index.css">
 
     <Header />
@@ -32,49 +40,238 @@ import MoreBtn from "../components/MoreBtn.astro";
                     </div>
                     <MoreBtn href="./product.html"/>
                 </div>
-                <!--<div class="right flex-1">
+                <div class="right flex-1">
                     <div class="product-swiper">
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide relative interactive-card" v-for="item in productList" :key="item.id">
-                                <img :src="item.image_intro" alt="">
-                                <div class="cate-info absolute">
-                                    <h5 class="cate-name">{{item.title}}</h5>
-                                    <p class="cate-desc">{{item.description}}</p>
-                                </div>
-                            </div>
+                            {
+                                productList.map(item => (
+                                    <div class="swiper-slide relative interactive-card">
+                                        <img src={item.image_intro} alt="">
+                                        <div class="cate-info absolute">
+                                            <h5 class="cate-name">{item.title}</h5>
+                                            <p class="cate-desc">{item.description}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
                         </div>
                     </div>
                     <div class="swiper-pagination flex align-center">
-                        <div :class="['swiper-pagination-box', 'relative', 'cursor-pointer', {active: index === productRealIndex}]"
-                             v-for="(item, index) in productList" :key="item.id"
-                             :data-index="(index + 1).toString().padStart(2, '0')" @click="changeProductIndex(index)">
-                            <span>{{item.title}}</span>
-                        </div>
+                        {
+                            productList.map((item, index) => (
+                                <div class="swiper-pagination-box relative cursor-pointer"
+                                     data-index={(index + 1).toString().padStart(2, '0')} data-index-number={index}>
+                                    <span>{item.title}</span>
+                                </div>
+                            ))
+                        }
                         <div class="swiper-pagination-box relative cursor-pointer">
                             <span><a href="./product.html">更多产品分类</a></span>
                         </div>
                     </div>
-                </div>-->
+                </div>
             </div>
-            <!--<div class="home-section-mobile product-mobile">
+            <div class="home-section-mobile product-mobile">
                 <div class="mobile-section-heading">
                     <p>CORE PRODUCT LINE</p>
                     <h2>产品展示</h2>
                 </div>
                 <p class="product-mobile__intro">专注高端工业轴承的研发、生产与应用配套</p>
                 <div class="product-mobile__list">
-                    <a class="product-mobile__card" href="./product.html" v-for="item in productList" :key="item.id">
-                        <img v-if="item.image_intro" :src="item.image_intro" :alt="item.title">
-                        <div>
-                            <h3>{{item.title}}</h3>
-                            <p class="hide-more-text" style="&#45;&#45;lines: 2;">{{item.description}}</p>
-                        </div>
-                    </a>
+                    {
+                        productList.map(item => (
+                            <a class="product-mobile__card" href="./product.html">
+                                {item.image_intro && <img src={item.image_intro} alt={item.title}>}
+                                <div>
+                                    <h3>{item.title}</h3>
+                                    <p class="hide-more-text" style="--lines: 2;">{item.description}</p>
+                                </div>
+                            </a>
+                        ))
+                    }
                 </div>
                 <a class="mobile-text-link" href="./product.html">浏览全部产品 <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="brand-introduction reveal-on-scroll">
+        <div class="page-container flex flex-column">
+            <div class="home-section-desktop">
+                <Tabs tabs={brandTabs} />
+                <div class="tab-panel relative flex-1">
+                    <div class="swiper-wrapper">
+                        {
+                            brandTabs.map(item => (
+                                <div class="swiper-slide">
+                                    <HomeTitle title={item.title} subtitle={item.enTitle} color="white"></HomeTitle>
+                                    <div class="content hide-more-text" style="--lines: 5;" set:text={item.content}></div>
+                                    <MoreBtn href="./about.html"/>
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <div class="swiper-btn absolute flex justify-between align-center">
+                        <div class="swiper-button-prev">
+                            <img src="./img/arrow2.png" alt="">
+                        </div>
+                        <div class="swiper-button-next">
+                            <img src="./img/arrow2.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="home-section-mobile brand-mobile">
+                <div class="mobile-section-heading mobile-section-heading&#45;&#45;light">
+                    <p>ABOUT GRONDE</p>
+                    <h2>关于我们</h2>
+                </div>
+                <div class="mobile-segment mobile-segment&#45;&#45;light" role="tablist" aria-label="关于我们">
+                    <button v-for="(item, index) in brandTabs" :key="item.id" type="button" role="tab"
+                            :class="{active: index === brandRealIndex}" :aria-selected="index === brandRealIndex"
+                            @click="changeBrandIndex(index)">{{item.title}}</button>
+                </div>
+                <article class="brand-mobile__content" v-if="currentBrand">
+                    <h3>{{currentBrand.title}}</h3>
+                    <p class="hide-more-text" style="&#45;&#45;lines: 5;">{{currentBrand.content}}</p>
+                    <a class="mobile-text-link mobile-text-link&#45;&#45;light" href="./about.html">了解凯瑞 <span aria-hidden="true">→</span></a>
+                </article>
+            </div>-->
+        </div>
+    </div>
+    <div class="case reveal-on-scroll">
+        <div class="page-container flex">
+            <div class="home-section-desktop">
+                <div class="left">
+                    <HomeTitle title="行业实战案例" subtitle="industry practical case" />
+                    <div class="case-tab flex flex-column">
+                        {
+                            caseList.map(item => (
+                                <div class="tab-item relative flex align-center">
+                                    <i>——&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
+                                    <span>{item.title}</span>
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <MoreBtn href="./case.html?pageId=6a66c24ce39ec507d8232004" />
+                </div>
+                <div class="right-box relative">
+                    <div class="right">
+                        <div class="case-swiper relative">
+                            <div class="swiper-wrapper">
+                                {
+                                    caseList.map(item => (
+                                        <div class="swiper-slide">
+                                            {item.bg_img && <img src={item.bg_img} alt={item.title}>}
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    {
+                        caseList.map(item => (
+                            <div class="cate-info absolute">
+                                <h5 class="cate-name hide-more-text" style="--lines: 1;">{item.title}</h5>
+                                <hr>
+                                <p class="cate-desc hide-more-text"  style="--lines: 2;">{item.intro}</p>
+                                <div class="swiper-btn absolute">
+                                    <div class="swiper-button-prev">
+                                        <img src="./img/left-arraw.png" alt="">
+                                    </div>
+                                    <div class="swiper-button-next">
+                                        <img src="./img/left-arraw.png" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+            <!--<div class="home-section-mobile case-mobile">
+                <div class="mobile-section-heading">
+                    <p>INDUSTRY PRACTICAL CASE</p>
+                    <h2>行业实战案例</h2>
+                </div>
+                <div class="mobile-segment" role="tablist" aria-label="案例分类">
+                    <button v-for="(item, index) in caseList" :key="item.id" type="button" role="tab"
+                            :class="{active: index === caseRealIndex}" :aria-selected="index === caseRealIndex"
+                            @click="changeCaseIndex(index)">{{item.title}}</button>
+                </div>
+                <article class="case-mobile__card" v-if="currentCase">
+                    <img v-if="currentCase.bg_img" :src="currentCase.bg_img" :alt="currentCase.title">
+                    <div>
+                        <h3 class="hide-more-text" style="&#45;&#45;lines: 1;">{{currentCase.title}}</h3>
+                        <p class="hide-more-text" style="&#45;&#45;lines: 3;">{{currentCase.intro}}</p>
+                    </div>
+                </article>
+                <a class="mobile-text-link" href="./case.html?pageId=6a66c24ce39ec507d8232004">查看全部案例 <span aria-hidden="true">→</span></a>
             </div>-->
         </div>
     </div>
 
     <script is:inline src="./js/swiper-bundle.min.js"></script>
+    <script>
+        function setProductIndex(index = 0) {
+            $('.swiper-pagination-box').eq(index + 1).addClass('active').siblings().removeClass('active');
+        }
+
+        function setBrandIndex(index = 0) {
+            $('.brand-introduction .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+        }
+
+        function setCaseIndex(index = 0) {
+            $('.case-tab .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+        }
+
+        (function (){
+            const productSwiper = new Swiper(".product-swiper", {
+                slidesPerView: 1,
+                spaceBetween: 16,
+                breakpoints: {
+                    768: {
+                        slidesPerView: 1.35,
+                        spaceBetween: 24,
+                    },
+                    1200: {
+                        slidesPerView: 1,
+                        spaceBetween: 0,
+                    },
+                },
+                navigation: {
+                    nextEl: ".production-list .swiper-button-next",
+                    prevEl: ".production-list .swiper-button-prev",
+                },
+                on: {
+                    init: (swiper) => {
+                        console.log("🚀 ~ init ~ swiper: ", swiper);
+                        setProductIndex(swiper.activeIndex)
+                    },
+                    slideChange: (swiper) => {
+                        setProductIndex(swiper.activeIndex)
+                    }
+                }
+            });
+            $('.production-list .swiper-pagination').on('click', '.swiper-pagination-box', function () {
+                productSwiper.slideTo($(this).data('index-number'))
+            })
+
+            setBrandIndex(0);
+            const brandSwiper = new Swiper(".brand-introduction .tab-panel", {
+                navigation: {
+                    nextEl: ".brand-introduction .swiper-button-next",
+                    prevEl: ".brand-introduction .swiper-button-prev",
+                },
+            });
+            brandSwiper.on('slideChange', () => {
+                setBrandIndex(brandSwiper.activeIndex);
+            })
+
+            window.addEventListener('tab-change', (event) => {
+                brandSwiper.slideTo(event.detail.activeIndex);
+            });
+
+            setCaseIndex(0);
+        })()
+    </script>
 </Layout>

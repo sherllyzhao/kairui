@@ -19,7 +19,8 @@ try {
   navList = res.data || res;
 
   // 三个分类请求相互独立，并行获取
-  const [about, goodsRes, contentRes] = await Promise.all([
+  const [about
+	  , goodsRes, contentRes] = await Promise.all([
     requestData('category', {sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
     requestData('category', {sort: 'sortAsc', category_id: '6a605df319df9b3e2e2b4af2'}),
     requestData('category', {sort: 'sortAsc', category_id: '6a65771ba6ba0c2e856b11c8'})

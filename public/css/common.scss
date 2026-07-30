@@ -1,112 +1,112 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 :root{
-    --lines: 3;
+  --lines: 3;
 }
 html, body{
-    font-family: 'SourceHanSansCN', 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
+  font-family: 'SourceHanSansCN', 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
 }
 li{
-    list-style: none;
+  list-style: none;
 }
 a {
-    text-decoration: none;
-    color: inherit;
+  text-decoration: none;
+  color: inherit;
 }
 
 .page-container{
-    width: clamp(1000px, 75.208vw, 3000px);
-    margin: 0 auto;
+  width: clamp(1000px, 75.208vw, 3000px);
+  margin: 0 auto;
 }
 
 @font-face {
-    font-family: 'SourceHanSansCN';
-    src: url('../font/SourceHanSansCN-Regular.woff2') format('woff2');
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
+  font-family: 'SourceHanSansCN';
+  src: url('../font/SourceHanSansCN-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
 }
 
 @font-face {
-    font-family: 'CTWeiBeiSJ';
-    src: url('../font/CTWeiBeiSJ-tiny.woff2') format('woff2');
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
+  font-family: 'CTWeiBeiSJ';
+  src: url('../font/CTWeiBeiSJ-tiny.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
 }
 
 .flex{
-    display: flex;
+  display: flex;
 }
 .flex-1{
-    flex: 1;
+  flex: 1;
 }
 .justify-center{
-    justify-content: center;
+  justify-content: center;
 }
 .justify-end{
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 .justify-start{
-    justify-content: flex-start;
+  justify-content: flex-start;
 }
 .justify-between{
-    justify-content: space-between;
+  justify-content: space-between;
 }
 .justify-around{
-    justify-content: space-around;
+  justify-content: space-around;
 }
 .align-center{
-    align-items: center;
+  align-items: center;
 }
 .flex-column{
-    flex-direction: column;
+  flex-direction: column;
 }
 .flex-row{
-    flex-direction: row;
+  flex-direction: row;
 }
 .flex-wrap{
-    flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 .flex-nowrap{
-    flex-wrap: nowrap;
+  flex-wrap: nowrap;
 }
 .flex-wrap-reverse{
-    flex-wrap: wrap-reverse;
+  flex-wrap: wrap-reverse;
 }
 .f-h{
-    height: 100%;
+  height: 100%;
 }
 .relative{
-    position: relative;
+  position: relative;
 }
 .absolute{
-    position: absolute;
+  position: absolute;
 }
 .fixed{
-    position: fixed;
+  position: fixed;
 }
 .swiper-slide{
-    overflow: hidden;
+  overflow: hidden;
 }
 .cursor-pointer{
-    cursor: pointer;
+  cursor: pointer;
 }
 .hide{
-    display: none;
+  display: none;
 }
 .show{
-    display: block;
+  display: block;
 }
 .hide-more-text{
-    display: -webkit-box;
-    -webkit-line-clamp: var(--lines);
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: var(--lines);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 小屏与移动端基础布局 */
@@ -131,5 +131,5 @@ a {
   }
 }
 [v-cloak]{
-    display: none;
+  display: none;
 }

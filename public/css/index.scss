@@ -54,6 +54,14 @@
       .product-swiper{
         overflow: hidden;
         height: clamp(400px, 29.167vw, 640px);
+        padding-top: clamp(20px, 1.563vw, 36px);
+        margin-top: calc(clamp(20px, 1.563vw, 36px) * -1);
+        .swiper-slide{
+          overflow: visible;
+          &.interactive-card:hover{
+            z-index: 1;
+          }
+        }
         img{
           width: auto;
           height: 100%;
@@ -187,8 +195,14 @@
         color: #212121;
         cursor: pointer;
         white-space: nowrap;
+        i{
+          display: none;
+        }
         &.active{
           color: #001E6A;
+          i{
+            display: inline-block;
+          }
         }
       }
     }
@@ -1119,6 +1133,277 @@ html.motion-ready .reveal-on-scroll.is-visible {
 .production-list .page-container .right .swiper-pagination .swiper-pagination-box span {
   flex: 0 0 auto;
   white-space: nowrap;
+}
+
+/* 首页新闻：移动端采用独立卡片列表，避免复用桌面 Swiper 的错位布局。 */
+.news-mobile,
+.home-section-mobile {
+  display: none;
+}
+
+@media screen and (min-width: 768px) {
+  .home-section-desktop {
+    display: contents;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .home-section-desktop { display: none; }
+  .home-section-mobile { display: block; }
+
+  .mobile-section-heading {
+    p {
+      color: #7c8596;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+    }
+    h2 {
+      margin-top: 9px;
+      color: #111827;
+      font-size: 29px;
+      line-height: 1.25;
+    }
+    &--light p,
+    &--light h2 { color: #fff; }
+  }
+
+  .mobile-segment {
+    display: flex;
+    gap: 22px;
+    margin-top: 28px;
+    padding-bottom: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+    button {
+      flex: 0 0 auto;
+      padding: 0 0 9px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: #6b7280;
+      font: 700 14px/1.2 inherit;
+      white-space: nowrap;
+      &.active {
+        border-bottom-color: #f59a23;
+        color: #001e6a;
+      }
+    }
+    &--light button { color: rgba(255, 255, 255, 0.66); }
+    &--light button.active {
+      border-bottom-color: #ff9600;
+      color: #fff;
+    }
+  }
+
+  .mobile-text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 26px;
+    color: #001e6a;
+    font-size: 14px;
+    font-weight: 700;
+    span { font-size: 18px; line-height: 1; }
+    &--light { color: #fff; }
+  }
+
+  .production-list {
+    padding: 60px 0 64px;
+    .page-container { display: block; }
+  }
+  .brand-introduction .page-container,
+  .case .page-container { display: block; }
+
+  .product-mobile__intro {
+    margin-top: 18px;
+    color: #5b6472;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .product-mobile__list {
+    display: grid;
+    grid-auto-columns: minmax(248px, 78vw);
+    grid-auto-flow: column;
+    gap: 14px;
+    margin-top: 26px;
+    padding: 0 16px 4px 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+  .product-mobile__card {
+    position: relative;
+    min-height: 282px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #001e6a;
+    scroll-snap-align: start;
+    &::after {
+      position: absolute;
+      inset: 38% 0 0;
+      content: '';
+      background: linear-gradient(180deg, transparent, rgba(0, 20, 72, 0.9));
+    }
+    > img { width: 100%; height: 282px; object-fit: cover; }
+    > div {
+      position: absolute;
+      z-index: 1;
+      right: 20px;
+      bottom: 20px;
+      left: 20px;
+      color: #fff;
+    }
+    h3 { font-size: 20px; line-height: 1.35; }
+    p {
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+  .case-mobile__card h3 { font-size: 20px; line-height: 1.35; }
+
+  .brand-introduction {
+    height: auto;
+    min-height: 0;
+    margin-top: 0;
+    padding: 64px 0;
+    border-radius: 0 42px 0 0;
+    background-attachment: scroll;
+  }
+  .brand-mobile__content {
+    margin-top: 22px;
+    padding: 24px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 16px;
+    background: rgba(0, 22, 75, 0.35);
+    backdrop-filter: blur(8px);
+    h3 { color: #fff; font-size: 21px; line-height: 1.35; }
+    > p {
+      margin-top: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+  }
+
+  .case {
+    padding: 64px 0;
+    &-mobile__card {
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #001e6a;
+      box-shadow: 0 14px 32px rgba(0, 30, 106, 0.16);
+      > img { display: block; width: 100%; height: 218px; object-fit: cover; }
+      > div { padding: 20px; color: #fff; }
+      p {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 14px;
+        line-height: 1.65;
+      }
+    }
+  }
+
+  .case2 { padding: 64px 0; }
+  .solution-mobile__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .solution-mobile__card {
+    position: relative;
+    min-height: 174px;
+    padding: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.12);
+    &:nth-child(2n) { background: rgba(0, 30, 106, 0.34); }
+    h3 { color: #fff; font-size: 17px; line-height: 1.4; }
+    p {
+      margin-top: 10px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    span {
+      position: absolute;
+      right: 16px;
+      bottom: 14px;
+      color: #ffb142;
+      font-size: 20px;
+      line-height: 1;
+    }
+  }
+
+  .news {
+    .page-container { padding: 58px 0 64px; }
+    &-desktop { display: none; }
+    &-mobile { display: block; }
+  }
+  .news-mobile {
+    &__heading {
+      h2 { font-size: 30px; line-height: 1.2; color: #111; letter-spacing: 0.02em; }
+      p { margin-top: 8px; font-size: 13px; line-height: 1; color: #777; letter-spacing: 0.04em; }
+    }
+    &__tabs {
+      display: flex;
+      gap: 24px;
+      margin-top: 32px;
+      padding-bottom: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar { display: none; }
+      button {
+        flex: 0 0 auto;
+        padding: 0 0 8px;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        background: transparent;
+        color: #777;
+        font: 700 15px/1.2 inherit;
+        white-space: nowrap;
+        &.active { border-bottom-color: #001e6a; color: #001e6a; }
+      }
+    }
+    &__list { display: grid; gap: 16px; margin-top: 22px; }
+    &__card {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      min-height: 142px;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(0, 30, 106, 0.09);
+      > img { width: 112px; height: 100%; min-height: 142px; object-fit: cover; }
+    }
+    &__card-content {
+      position: relative;
+      min-width: 0;
+      padding: 17px 38px 17px 17px;
+      time { display: block; color: #001e6a; font-size: 12px; line-height: 1.2; }
+      h3 { margin-top: 9px; color: #161616; font-size: 16px; line-height: 1.45; }
+      p { margin-top: 7px; color: #777; font-size: 13px; line-height: 1.5; }
+      span { position: absolute; right: 16px; bottom: 15px; color: #001e6a; font-size: 20px; line-height: 1; }
+    }
+    &__more {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 28px;
+      color: #001e6a;
+      font-size: 14px;
+      font-weight: 700;
+      span { font-size: 18px; line-height: 1; }
+    }
+  }
 }
 /* 品牌介绍小屏操作区避免与更多按钮重叠 */
 @media screen and (max-width: 1199px) {
