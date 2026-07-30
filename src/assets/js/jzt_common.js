@@ -31,145 +31,76 @@ var baseUrl = ((import.meta.env && import.meta.env.BASE_URL) || '/').replace(/\/
 	} 数据筛选条件
 */
 
-// 重复请求处理
-var requestList = []
-var requestWait = []
-
-// 全局缓存数据
+// 全局缓存数据（api -> JSON 字符串）
 var jsonArr = {}
+// 进行中的请求（api -> Promise）：同一 api 的并发调用复用同一次请求，替代原 requestList/requestWait 排队机制
+var requestPromises = {}
 //
 var cateJson
 
-function requestData(api, data = null, callBack, async = true) {
-    cateJson = getData('category', data)
-    if (!cateJson) {
-        requestWait.push({ api, data, callBack, async })
-        ajaxData('category', data, async, item => {
-            requestData(item.api, item.data, item.callBack, item.async)
-            return true
-        })
-    } else {
-        cateJson = JSON.parse(cateJson)
-        var response = getData(api, data)
-        if (response) {
-            response = JSON.parse(response)
-            responseData(api, data, response, callBack)
-            return
-        }
-        if (!requestList.includes(api)) {
-            ajaxData(api, data, async, item => {
-                if (item.api === api) {
-                    requestData(item.api, item.data, item.callBack, item.async)
-                    return true
-                }
-                return false
-            }, result => {
-                responseData(api, data, result, callBack)
-            })
-        } else {
-            let obj = { api, data, callBack, async }
-            /* if (isObjectInArray(requestWait, obj))  */requestWait.push(obj)
-        }
-    }
+/* 请求数据（async/await 版）
+ * 返回 Promise，可直接 await 拿到结果：const res = await requestData('site')
+ * 第 3 个参数 callBack 保留，兼容旧回调写法：requestData('site', null, res => {...})
+ * 原第 4 个参数 async 已废弃（fetch 恒为异步），传入会被忽略
+ */
+async function requestData(api, data = null, callBack) {
+    // filterDataList 依赖分类数据，先确保 category 就绪
+    cateJson = JSON.parse(await loadJson('category', data))
+    var response = JSON.parse(await loadJson(api, data))
+    var result = data ? filterDataList(api, data, response) : response
+    if (typeof callBack === 'function') callBack(result)
+    return result
 }
 
-//
-function isObjectInArray(arr, obj) {
-    return arr.some(function (element) {
-        return element === obj;
-    });
-}
-
-// 获取数据
+// 获取缓存数据
 function getData(api, data) {
     var result
-    if (data && data.method == 'session') result = window.sessionStorage.getItem(api) || jsonArr[api]
+    if (data && data.method == 'session' && typeof window !== 'undefined') result = window.sessionStorage.getItem(api) || jsonArr[api]
     else result = jsonArr[api]
     return result
 }
 
-// 请求数据（原生 fetch 实现，不再依赖 jQuery；async 参数仅为兼容旧调用保留，fetch 恒为异步）
-function ajaxData(api, data, async, waitCallBack, resultCallBack) {
-    if (!requestList.includes(api)) {
-        requestList.push(api)
-        var url = baseUrl + api + '.json?v=' + new Date().getTime()
-
-        // SSR/SSG 环境检测：如果是 Node 环境且相对路径，直接读取文件系统
-        if (typeof window === 'undefined' && url.startsWith('/')) {
-            // 动态导入 Node.js 模块（仅在服务端可用）
-            Promise.all([
-                import('path'),
-                import('fs')
-            ]).then(function([pathModule, fsModule]) {
-                var publicDir = pathModule.resolve(process.cwd(), 'public')
-                var filePath = pathModule.join(publicDir, url.split('?')[0])
-
-                try {
-                    var content = fsModule.readFileSync(filePath, 'utf8')
-                    var result = JSON.parse(content)
-                    if (data && data.method == 'session') jsonArr[api] = JSON.stringify(result)
-                    else jsonArr[api] = JSON.stringify(result)
-                    if (resultCallBack) resultCallBack(result)
-                    var pendingList = requestWait
-                    requestWait = []
-                    pendingList.forEach(item => {
-                        if (!waitCallBack(item)) requestWait.push(item)
-                    })
-                } catch (error) {
-                    console.error('[jzt_common] 读取 ' + api + '.json 失败:', error)
-                    var index = requestList.indexOf(api)
-                    if (index > -1) requestList.splice(index, 1)
-                }
-            }).catch(function(error) {
-                console.error('[jzt_common] 导入 Node 模块失败:', error)
-                var index = requestList.indexOf(api)
-                if (index > -1) requestList.splice(index, 1)
-            })
-            return
-        }
-
-        // 浏览器环境：使用 fetch
-        fetch(url)
-            .then(function (res) {
-                if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.url)
-                return res.json()
-            })
-            .then(function (result) {
-                try {
-                    if (data && data.method == 'session') window.sessionStorage.setItem(api, JSON.stringify(result))
-                    else jsonArr[api] = JSON.stringify(result)
-                } catch (error) {
-                    console.log(error)
-                    jsonArr[api] = JSON.stringify(result)
-                }
-                if (resultCallBack) resultCallBack(result)
-                // 执行待请求的队列对应的api，并移除已消费的项，避免被后续请求重放
-                // 先取出快照并清空原队列，防止处理期间新增的等待项被覆盖丢失
-                var pendingList = requestWait
-                requestWait = []
-                pendingList.forEach(item => {
-                    if (!waitCallBack(item)) requestWait.push(item)
-                })
-            })
-            .catch(function (error) {
-                // 请求失败：从进行中列表移除，允许后续调用重试，避免等待队列永久挂起
-                console.error('[jzt_common] 加载 ' + api + '.json 失败:', error)
-                var index = requestList.indexOf(api)
-                if (index > -1) requestList.splice(index, 1)
-            })
-    } else {
-        // console.log('------ajaxData----------')
+// 加载 JSON 字符串：缓存命中直接返回；未命中时复用进行中的请求，或发起新请求
+function loadJson(api, data) {
+    var cached = getData(api, data)
+    if (cached) return Promise.resolve(cached)
+    if (!requestPromises[api]) {
+        requestPromises[api] = fetchJson(api, data).catch(function (error) {
+            // 请求失败：清掉占位，允许后续调用重试，避免永久挂起
+            delete requestPromises[api]
+            console.error('[jzt_common] 加载 ' + api + '.json 失败:', error)
+            throw error
+        })
     }
+    return requestPromises[api]
 }
 
-function responseData(api, data, response, callBack) {
-    // if (api == 'site') console.log(api, data, response, callBack, requestWait)
-    if (!data) {
-        callBack(response)
+// 实际请求：SSR/SSG 环境读取文件系统，浏览器环境用 fetch；写入缓存并返回 JSON 字符串
+async function fetchJson(api, data) {
+    var url = baseUrl + api + '.json?v=' + Date.now()
+    var result
+
+    if (typeof window === 'undefined' && url.startsWith('/')) {
+        // SSR/SSG：动态导入 Node.js 模块（仅在服务端可用），直接读取 public 目录
+        const [pathModule, fsModule] = await Promise.all([import('path'), import('fs')])
+        var publicDir = pathModule.resolve(process.cwd(), 'public')
+        var filePath = pathModule.join(publicDir, url.split('?')[0])
+        result = JSON.parse(fsModule.readFileSync(filePath, 'utf8'))
     } else {
-        var dataInfo = filterDataList(api, data, response)
-        callBack(dataInfo)
+        var res = await fetch(url)
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.url)
+        result = await res.json()
     }
+
+    var jsonStr = JSON.stringify(result)
+    try {
+        if (data && data.method == 'session' && typeof window !== 'undefined') window.sessionStorage.setItem(api, jsonStr)
+        else jsonArr[api] = jsonStr
+    } catch (error) {
+        console.log(error)
+        jsonArr[api] = jsonStr
+    }
+    return jsonStr
 }
 
 /**

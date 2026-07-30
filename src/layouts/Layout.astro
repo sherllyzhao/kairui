@@ -7,9 +7,12 @@ let siteInfo = {
 	description: '山西凯瑞工业发展有限公司',
 	icon: ''
 };
-requestData('site', null, (res) => {
-	siteInfo = res;
-})
+try {
+	siteInfo = await requestData('site');
+} catch (error) {
+	// 加载失败时保留上面的默认值兜底
+	console.error('[Layout] 获取站点信息失败:', error);
+}
 ---
 
 <!doctype html>
