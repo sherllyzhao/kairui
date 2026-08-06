@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from "../components/Header.astro";
 import Banner from "../components/Banner.astro";
 import HomeTitle from "../components/HomeTitle.astro";
 import MoreBtn from "../components/MoreBtn.astro";
@@ -44,7 +43,6 @@ const getTime = (time) => {
 	<link rel="stylesheet" href="./css/swiper-bundle.min.css">
 	<link rel="stylesheet" href="./css/index.css">
 
-	<Header/>
 	<Banner id="6a5d9b5c69cfc1547e06c7d1"/>
 	<div class="production-list reveal-on-scroll">
 		<div class="page-container flex justify-between">
@@ -118,8 +116,8 @@ const getTime = (time) => {
 	</div>
 	<div class="brand-introduction reveal-on-scroll">
 		<div class="page-container flex flex-column">
-			<div class="home-section-desktop">
-				<Tabs tabs={brandTabs}/>
+			<div class="home-section-desktop" data-tabs="brand-tabs">
+				<Tabs tabs={brandTabs} name="brand-tabs"/>
 				<div class="tab-panel relative flex-1">
 					<div class="swiper-wrapper">
                       {
@@ -289,27 +287,27 @@ const getTime = (time) => {
 	<div class="news reveal-on-scroll">
 		<div class="page-container">
 			<div class="news-desktop">
-				<div class="top flex justify-between align-center">
+				<div class="top flex justify-between align-center" data-tabs="news-tabs">
 					<HomeTitle title="新闻动态" subtitle="news updates"/>
-					<Tabs tabs={articleTabs}/>
+					<Tabs tabs={articleTabs} name="news-tabs"/>
 				</div>
               {
-                articleTabs.map((item, index) => (
+				  articleTabs.map((item, index) => (
 						<div class="bottom" id={`news-swiper-${item.id}`} data-index-number={index}>
 							<div class="swiper-wrapper">
                               {
                                 articleList[item.id] && articleList[item.id].map(item2 => (
-											  <div class="swiper-slide interactive-card">
-												  <div class="info">
-													  <time class="date">{getTime(item2.create_time)}</time>
-													  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
-													  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
-													  <div class="arrow">
-														  <img src="./img/right-arraw.png" alt="" class="arrow">
-													  </div>
-												  </div>
-                                                {item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
-											  </div>
+								  <div class="swiper-slide interactive-card">
+									  <div class="info">
+										  <time class="date">{getTime(item2.create_time)}</time>
+										  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
+										  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
+										  <div class="arrow">
+											  <img src="./img/right-arraw.png" alt="" class="arrow">
+										  </div>
+									  </div>
+									{item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
+								  </div>
                                 ))
                               }
 							</div>
@@ -322,33 +320,46 @@ const getTime = (time) => {
 								</div>
 							</div>
 						</div>
-                ))
+				  ))
               }
 			</div>
-			<!--<div class="news-mobile">
-                <div class="news-mobile__heading">
-                    <h2>新闻动态</h2>
-                    <p>NEWS UPDATES</p>
-                </div>
-                <div class="news-mobile__tabs" role="tablist" aria-label="新闻分类">
-                    <button v-for="(item, index) in articleTabs" :key="item.id" type="button"
-                            :class="{active: index === articleTabIndex}" :aria-selected="index === articleTabIndex"
-                            role="tab" @click="changeArticleIndex(index)">{{item.title}}</button>
-                </div>
-                <div class="news-mobile__list">
-                    <a v-for="item in activeArticleList" :key="item.id" class="news-mobile__card"
-                       :href="`./newsDetails.html?id=${item.id}&cateId=${activeArticleTab.id}`">
-                        <img v-if="item.bg_img" :src="item.bg_img" :alt="item.title">
-                        <div class="news-mobile__card-content">
-                            <time>{{getTime(item.create_time)}}</time>
-                            <h3 class="hide-more-text" style="&#45;&#45;lines: 2;">{{item.title}}</h3>
-                            <p class="hide-more-text" style="&#45;&#45;lines: 2;">{{item.intro}}</p>
-                            <span aria-hidden="true">→</span>
-                        </div>
-                    </a>
-                </div>
-                <a class="news-mobile__more" href="./news.html">查看全部新闻 <span aria-hidden="true">→</span></a>
-            </div>-->
+			<div class="news-mobile">
+				<div class="news-mobile__heading">
+					<h2>新闻动态</h2>
+					<p>NEWS UPDATES</p>
+				</div>
+				<div class="news-mobile__tabs" role="tablist" aria-label="新闻分类">
+                  {
+                    articleTabs.map((item, index) => (
+						<button type="button" role="tab" data-index-number={index}>{item.title}</button>
+                    ))
+                  }
+				</div>
+				{
+					articleTabs.map((item, index) => (
+						<div class="news-mobile__list" data-index-number={index}>
+							{
+								articleList[item.id] && articleList[item.id].map(item2 => (
+									<a class="news-mobile__card"
+									   href={`./newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
+										{
+											item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
+										}
+										<div class="news-mobile__card-content">
+											<time>{getTime(item2.create_time)}</time>
+											<h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
+											<p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
+											<span aria-hidden="true">→</span>
+										</div>
+									</a>
+								))
+							}
+						</div>
+					))
+				}
+
+				<a class="news-mobile__more" href="./news.html">查看全部新闻 <span aria-hidden="true">→</span></a>
+			</div>
 		</div>
 	</div>
 
@@ -429,9 +440,6 @@ const getTime = (time) => {
         brandSwiper.on('slideChange', () => {
           setBrandSwiperIndex(brandSwiper.activeIndex);
         })
-        window.addEventListener('tab-change', (event) => {
-          brandSwiper.slideTo(event.detail.activeIndex);
-        });
         $('.case-tab .tab-item').on('click', function () {
           setBrandIndex($(this).data('index-number'));
         });
@@ -465,7 +473,7 @@ const getTime = (time) => {
           setCaseIndex($(this).data('index-number'));
         });
 
-		  setArticleIndex(0)
+        setArticleIndex(0)
         $('.news .bottom').each(function (index, item) {
           const swiper = new Swiper(item, {
             slidesPerView: 1,
@@ -491,7 +499,18 @@ const getTime = (time) => {
               prevEl: `.news .bottom[data-index-number="${index}"] .swiper-button-prev`,
             },
           });
-        })
+        });
+		$('.news .news-mobile__tabs button').on('click', function () {
+			setArticleIndex($(this).data('index-number'));
+		})
+
+        window.addEventListener('tab-change', (event) => {
+          if (event.detail.name === 'brand-tabs') {
+            brandSwiper.slideTo(event.detail.activeIndex);
+          } else if (event.detail.name === 'news-tabs') {
+            setArticleIndex(+event.detail.activeIndex)
+          }
+        });
       })()
 	</script>
 </Layout>

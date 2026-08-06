@@ -286,7 +286,8 @@
     margin-top: clamp(100px, 5.46875vw, 150px);
     width: calc(100vw - clamp(160px, 13vw, 400px));
     height: clamp(300px, 18.229vw, 400px);
-    overflow: hidden; }
+    overflow: hidden;
+    display: none; }
     .news .bottom .swiper-slide {
       padding-left: clamp(30px, 2.1875vw, 60px);
       transition: all 0.3s ease-in-out; }
@@ -337,6 +338,8 @@
           color: #fff; }
         .news .bottom .swiper-slide-active .info .arrow img, .news .bottom .swiper-slide:hover .info .arrow img {
           filter: drop-shadow(0 -500px 0 #fff); }
+    .news .bottom.active {
+      display: block; }
 
 /* 首页滚动入场 / 退场动画 */
 .reveal-on-scroll {
@@ -1167,9 +1170,11 @@ html.motion-ready .reveal-on-scroll.is-visible {
         border-bottom-color: #001e6a;
         color: #001e6a; }
   .news-mobile__list {
-    display: grid;
+    display: none;
     gap: 16px;
     margin-top: 22px; }
+    .news-mobile__list.active {
+      display: grid; }
   .news-mobile__card {
     display: grid;
     grid-template-columns: 112px minmax(0, 1fr);

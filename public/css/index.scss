@@ -354,6 +354,7 @@
     width: calc(100vw - clamp(160px, 13vw, 400px));
     height: clamp(300px, 18.229vw, 400px);
     overflow: hidden;
+    display: none;
     .swiper-slide{
       padding-left: clamp(30px, 2.1875vw, 60px);
       transition: all 0.3s ease-in-out;
@@ -418,6 +419,9 @@
           }
         }
       }
+    }
+    &.active{
+      display: block;
     }
   }
 }
@@ -1388,7 +1392,7 @@ html.motion-ready .reveal-on-scroll.is-visible {
         &.active { border-bottom-color: #001e6a; color: #001e6a; }
       }
     }
-    &__list { display: grid; gap: 16px; margin-top: 22px; }
+    &__list { display: none; gap: 16px; margin-top: 22px; &.active { display: grid; }}
     &__card {
       display: grid;
       grid-template-columns: 112px minmax(0, 1fr);

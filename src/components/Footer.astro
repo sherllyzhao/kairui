@@ -1,0 +1,17 @@
+---
+import {requestData} from "../assets/js/jzt_common";
+const siteInfo = await requestData('site');
+---
+
+<footer>
+	<div class="page-container flex justify-between">
+		<div class="left">
+			<p>Copyright  ©  山西凯瑞工业发展有限公司   All rights reserved.</p>
+			<p>备案号：<a href="https://beian.miit.gov.cn/">{siteInfo.company_keep}</a></p>
+		</div>
+		<div class="right">
+			<p>中国区负责人： {siteInfo.company_phone}</p>
+			<p>邮箱： {siteInfo.company_email}</p>
+		</div>
+	</div>
+</footer>

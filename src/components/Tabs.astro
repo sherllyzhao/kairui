@@ -1,27 +1,33 @@
 ---
-const {tabs = []} = Astro.props;
+const {tabs = [], name = 'tabs'} = Astro.props;
 ---
 
 <link rel="stylesheet" href="./css/tabs.css">
-<div class="tab flex align-center">
+<div class="tab flex align-center my-tabs">
   {
     tabs.map((item, index) => {
-      return <div class="tab-item relative" key={item.id} data-index={index}>
-        <span>{item.title}</span>
+      return <div class="tab-item relative" key={item.id} data-index={index} data-name={name}>
+        <span style="pointer-events: none;">{item.title}</span>
       </div>
     })
   }
 </div>
 
 <script>
-    const tabItems = document.querySelectorAll('.tab-item');
-    tabItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        tabItems.forEach(item => item.classList.remove('active'));
-        item.classList.add('active');
+  const tabs = document.querySelectorAll('.my-tabs');
+  const tabItems = [];
+  tabs.forEach((item) => {
+    tabItems.push(item.querySelectorAll('.tab-item'));
+  });
+  tabItems.forEach((item) => {
+    item.forEach((item2) => {
+      item2.addEventListener('click', (e) => {
+        const index = e.target.dataset.index;
+        const name = e.target.dataset.name;
         window.dispatchEvent(new CustomEvent('tab-change', {
-          detail: { activeIndex: index }
+          detail: { activeIndex: index, name:  name}
         }));
-      });
-    });
+      })
+    })
+  })
 </script>
