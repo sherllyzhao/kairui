@@ -57,7 +57,7 @@
         padding-top: clamp(20px, 1.563vw, 36px);
         margin-top: calc(clamp(20px, 1.563vw, 36px) * -1);
         .swiper-slide{
-          overflow: visible;
+          overflow: hidden;
           &.interactive-card:hover{
             z-index: 1;
           }
@@ -224,6 +224,9 @@
     .case-swiper{
       height: 100%;
       width: clamp(800px, 50vw, 1000px);
+      .swiper-slide{
+        overflow: hidden;
+      }
       img{
         width: 100%;
         height: 100%;
@@ -446,19 +449,16 @@ html.motion-ready .reveal-on-scroll.is-visible {
     visibility 0s linear 0s;
 }
 
-.production-list .product-swiper .interactive-card,
 .case2 .case-list .interactive-card,
 .news .bottom .interactive-card {
   transition: transform 0.35s ease;
 }
 
-.production-list .product-swiper .interactive-card:hover,
 .case2 .case-list .interactive-card:hover {
   transform: translate3d(0, -8px, 0);
   box-shadow: 0 16px 34px rgba(0, 30, 106, 0.14);
 }
 
-.production-list .product-swiper .interactive-card > img,
 .case .case-swiper .swiper-slide img {
   transition: transform 0.55s ease;
 }
@@ -475,11 +475,6 @@ html.motion-ready .reveal-on-scroll.is-visible {
 
 .news .bottom .interactive-card .img {
   transition: filter 0.55s ease;
-}
-
-.production-list .product-swiper .interactive-card:hover > img,
-.case .case-swiper .swiper-slide:hover img {
-  transform: scale(1.05);
 }
 
 .news .bottom .interactive-card:hover .img {

@@ -4,330 +4,494 @@ import Header from "../components/Header.astro";
 import Banner from "../components/Banner.astro";
 import HomeTitle from "../components/HomeTitle.astro";
 import MoreBtn from "../components/MoreBtn.astro";
-import {requestData} from "../assets/js/jzt_common";
+import {requestData, timeStamp2String} from "../assets/js/jzt_common";
 import Tabs from "../components/Tabs.astro";
 
-const [productRes, brandRes, caseRes] = await Promise.all([
-    requestData('category', {type: 'goods', sort: 'sortAsc'}),
-    requestData('category', {type: 'text', sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
-    requestData('goods', {sort: 'sortAsc', category_id: '6a606770c2f86d512a7f5bd0'})
+const [productRes, brandRes, caseRes, case2Res, articleTabsRes] = await Promise.all([
+  requestData('category', {type: 'goods', sort: 'sortAsc', page: 1, limit: 4}),
+  requestData('category', {type: 'text', sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
+  requestData('goods', {sort: 'sortAsc', category_id: '6a606770c2f86d512a7f5bd0', page: 1, limit: 3}),
+  requestData('goods', {sort: 'sortAsc', category_id: '6a6067a0cd13e87ead2a9845', page: 1, limit: 4}),
+  requestData('category', {sort: 'sortAsc', category_id: '6a65771ba6ba0c2e856b11c8'})
 ]);
 
-const productList = productRes?.data?.slice(0, 4);
+const productList = productRes?.data;
 const brandTabs = brandRes?.data?.filter(item => item.showInHome);
-const caseList = caseRes?.data?.slice(0, 3);
+const caseList = caseRes?.data;
+const case2List = case2Res?.data;
+const articleTabs = articleTabsRes?.data;
+let articleList = {};
+try {
+  if (articleTabs.length > 0) {
+    const requestList = [];
+    articleTabs.forEach((item) => {
+      requestList.push(requestData('content', {sort: 'sortAsc', category_id: item.id, page: 1, limit: 4}));
+    })
+    const articleRes = await Promise.all(requestList);
+    articleRes.forEach((item, index) => {
+      articleList[articleTabs[index].id] = item.data;
+    })
+  }
+} catch (e) {
+  console.error(e, '获取文章列表失败');
+}
+const getTime = (time) => {
+  return timeStamp2String(time, 'Y-m-d')
+}
 ---
 
 <Layout>
-    <link rel="stylesheet" href="./css/swiper-bundle.min.css">
-    <link rel="stylesheet" href="./css/index.css">
+	<link rel="stylesheet" href="./css/swiper-bundle.min.css">
+	<link rel="stylesheet" href="./css/index.css">
 
-    <Header />
-    <Banner id="6a5d9b5c69cfc1547e06c7d1" />
-    <div class="production-list reveal-on-scroll">
-        <div class="page-container flex justify-between">
-            <div class="home-section-desktop">
-                <div class="left relative">
-                    <HomeTitle title="产品展示" subtitle="core product line"></HomeTitle>
-                    <p class="description">专注高端工业轴承的研发、生产与应用配套</p>
-                    <div class="swiper-btn flex justify-between align-center">
-                        <div class="swiper-button-prev">
-                            <img src="./img/arrow2.png" alt="">
-                        </div>
-                        <div class="swiper-button-next">
-                            <img src="./img/arrow2.png" alt="">
-                        </div>
-                    </div>
-                    <MoreBtn href="./product.html"/>
-                </div>
-                <div class="right flex-1">
-                    <div class="product-swiper">
-                        <div class="swiper-wrapper">
-                            {
-                                productList.map(item => (
-                                    <div class="swiper-slide relative interactive-card">
-                                        <img src={item.image_intro} alt="">
-                                        <div class="cate-info absolute">
-                                            <h5 class="cate-name">{item.title}</h5>
-                                            <p class="cate-desc">{item.description}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
-                    <div class="swiper-pagination flex align-center">
-                        {
-                            productList.map((item, index) => (
-                                <div class="swiper-pagination-box relative cursor-pointer"
-                                     data-index={(index + 1).toString().padStart(2, '0')} data-index-number={index}>
-                                    <span>{item.title}</span>
-                                </div>
+	<Header/>
+	<Banner id="6a5d9b5c69cfc1547e06c7d1"/>
+	<div class="production-list reveal-on-scroll">
+		<div class="page-container flex justify-between">
+			<div class="home-section-desktop">
+				<div class="left relative">
+					<HomeTitle title="产品展示" subtitle="core product line"></HomeTitle>
+					<p class="description">专注高端工业轴承的研发、生产与应用配套</p>
+					<div class="swiper-btn flex justify-between align-center">
+						<div class="swiper-button-prev">
+							<img src="./img/arrow2.png" alt="">
+						</div>
+						<div class="swiper-button-next">
+							<img src="./img/arrow2.png" alt="">
+						</div>
+					</div>
+					<MoreBtn href="./product.html"/>
+				</div>
+				<div class="right flex-1">
+					<div class="product-swiper">
+						<div class="swiper-wrapper">
+                          {
+                            productList.map(item => (
+									<div class="swiper-slide relative interactive-card">
+										<img src={item.image_intro} alt="">
+										<div class="cate-info absolute">
+											<h5 class="cate-name">{item.title}</h5>
+											<p class="cate-desc">{item.description}</p>
+										</div>
+									</div>
                             ))
-                        }
-                        <div class="swiper-pagination-box relative cursor-pointer">
-                            <span><a href="./product.html">更多产品分类</a></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="home-section-mobile product-mobile">
-                <div class="mobile-section-heading">
-                    <p>CORE PRODUCT LINE</p>
-                    <h2>产品展示</h2>
-                </div>
-                <p class="product-mobile__intro">专注高端工业轴承的研发、生产与应用配套</p>
-                <div class="product-mobile__list">
-                    {
-                        productList.map(item => (
-                            <a class="product-mobile__card" href="./product.html">
-                                {item.image_intro && <img src={item.image_intro} alt={item.title}>}
-                                <div>
-                                    <h3>{item.title}</h3>
-                                    <p class="hide-more-text" style="--lines: 2;">{item.description}</p>
-                                </div>
-                            </a>
+                          }
+						</div>
+					</div>
+					<div class="swiper-pagination flex align-center">
+                      {
+                        productList.map((item, index) => (
+								<div class="swiper-pagination-box relative cursor-pointer"
+								     data-index={(index + 1).toString().padStart(2, '0')} data-index-number={index}>
+									<span>{item.title}</span>
+								</div>
                         ))
-                    }
-                </div>
-                <a class="mobile-text-link" href="./product.html">浏览全部产品 <span aria-hidden="true">→</span></a>
-            </div>
-        </div>
-    </div>
-    <div class="brand-introduction reveal-on-scroll">
-        <div class="page-container flex flex-column">
-            <div class="home-section-desktop">
-                <Tabs tabs={brandTabs} />
-                <div class="tab-panel relative flex-1">
-                    <div class="swiper-wrapper">
-                        {
-                            brandTabs.map(item => (
-                                <div class="swiper-slide">
-                                    <HomeTitle title={item.title} subtitle={item.enTitle} color="white"></HomeTitle>
-                                    <div class="content hide-more-text" style="--lines: 5;" set:text={item.content}></div>
-                                    <MoreBtn href="./about.html"/>
-                                </div>
-                            ))
-                        }
-                    </div>
-                    <div class="swiper-btn absolute flex justify-between align-center">
-                        <div class="swiper-button-prev">
-                            <img src="./img/arrow2.png" alt="">
-                        </div>
-                        <div class="swiper-button-next">
-                            <img src="./img/arrow2.png" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="home-section-mobile brand-mobile">
-                <div class="mobile-section-heading mobile-section-heading--light">
-                    <p>ABOUT GRONDE</p>
-                    <h2>关于我们</h2>
-                </div>
-                <div class="mobile-segment mobile-segment--light" role="tablist" aria-label="关于我们">
-                    {
-                        brandTabs.map((item, index) => (
-                            <button type="button" role="tab" data-index-number={index}>{item.title}</button>
-                        ))
-                    }
-                </div>
-                {
-                    brandTabs.map((item, index) => (
-                        <div class="brand-mobile__content" data-index-number={index}>
-                            <h3>{item.title}</h3>
-                            <p class="hide-more-text" style="--lines: 5;">{item.content}</p>
-                            <a class="mobile-text-link mobile-text-link--light" href="./about.html">了解凯瑞 <span aria-hidden="true">→</span></a>
-                        </div>
+                      }
+						<div class="swiper-pagination-box relative cursor-pointer">
+							<span><a href="./product.html">更多产品分类</a></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="home-section-mobile product-mobile">
+				<div class="mobile-section-heading">
+					<p>CORE PRODUCT LINE</p>
+					<h2>产品展示</h2>
+				</div>
+				<p class="product-mobile__intro">专注高端工业轴承的研发、生产与应用配套</p>
+				<div class="product-mobile__list">
+                  {
+                    productList.map(item => (
+							<a class="product-mobile__card" href="./product.html">
+                              {item.image_intro && <img src={item.image_intro} alt={item.title}>}
+								<div>
+									<h3>{item.title}</h3>
+									<p class="hide-more-text" style="--lines: 2;">{item.description}</p>
+								</div>
+							</a>
                     ))
-                }
-            </div>
-        </div>
-    </div>
-    <div class="case reveal-on-scroll">
-        <div class="page-container flex">
-            <div class="home-section-desktop">
-                <div class="left">
-                    <HomeTitle title="行业实战案例" subtitle="industry practical case" />
-                    <div class="case-tab flex flex-column">
-                        {
-                            caseList.map((item, index) => (
-                                <div class="tab-item relative flex align-center" data-index-number={index}>
-                                    <i>——&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
-                                    <span>{item.title}</span>
-                                </div>
-                            ))
-                        }
-                    </div>
-                    <MoreBtn href="./case.html?pageId=6a66c24ce39ec507d8232004" />
-                </div>
-                <div class="right-box relative">
-                    <div class="right">
-                        <div class="case-swiper relative">
-                            <div class="swiper-wrapper">
-                                {
-                                    caseList.map(item => (
-                                        <div class="swiper-slide">
-                                            {item.bg_img && <img src={item.bg_img} alt={item.title}>}
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    {
-                        caseList.map(item => (
-                            <div class="cate-info absolute">
-                                <h5 class="cate-name hide-more-text" style="--lines: 1;">{item.title}</h5>
-                                <hr>
-                                <p class="cate-desc hide-more-text"  style="--lines: 2;">{item.intro}</p>
-                                <div class="swiper-btn absolute">
-                                    <div class="swiper-button-prev">
-                                        <img src="./img/left-arraw.png" alt="">
-                                    </div>
-                                    <div class="swiper-button-next">
-                                        <img src="./img/left-arraw.png" alt="">
-                                    </div>
-                                </div>
-                            </div>
+                  }
+				</div>
+				<a class="mobile-text-link" href="./product.html">浏览全部产品 <span aria-hidden="true">→</span></a>
+			</div>
+		</div>
+	</div>
+	<div class="brand-introduction reveal-on-scroll">
+		<div class="page-container flex flex-column">
+			<div class="home-section-desktop">
+				<Tabs tabs={brandTabs}/>
+				<div class="tab-panel relative flex-1">
+					<div class="swiper-wrapper">
+                      {
+                        brandTabs.map(item => (
+								<div class="swiper-slide">
+									<HomeTitle title={item.title} subtitle={item.enTitle} color="white"></HomeTitle>
+									<div class="content hide-more-text" style="--lines: 5;"
+									     set:text={item.content}></div>
+									<MoreBtn href="./about.html"/>
+								</div>
                         ))
-                    }
-                </div>
-            </div>
-            <div class="home-section-mobile case-mobile">
-                <div class="mobile-section-heading">
-                    <p>INDUSTRY PRACTICAL CASE</p>
-                    <h2>行业实战案例</h2>
-                </div>
-                <div class="mobile-segment" role="tablist" aria-label="案例分类">
-                    {
-                      caseList.map((item, index) => (
-                        <button type="button" role="tab" data-index-number={index}>{item.title}</button>
-                      ))
-                    }
-                </div>
-                {
+                      }
+					</div>
+					<div class="swiper-btn absolute flex justify-between align-center">
+						<div class="swiper-button-prev">
+							<img src="./img/arrow2.png" alt="">
+						</div>
+						<div class="swiper-button-next">
+							<img src="./img/arrow2.png" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="home-section-mobile brand-mobile">
+				<div class="mobile-section-heading mobile-section-heading--light">
+					<p>ABOUT GRONDE</p>
+					<h2>关于我们</h2>
+				</div>
+				<div class="mobile-segment mobile-segment--light" role="tablist" aria-label="关于我们">
+                  {
+                    brandTabs.map((item, index) => (
+							<button type="button" role="tab" data-index-number={index}>{item.title}</button>
+                    ))
+                  }
+				</div>
+              {
+                brandTabs.map((item, index) => (
+						<div class="brand-mobile__content" data-index-number={index}>
+							<h3>{item.title}</h3>
+							<p class="hide-more-text" style="--lines: 5;">{item.content}</p>
+							<a class="mobile-text-link mobile-text-link--light" href="./about.html">了解凯瑞 <span
+									aria-hidden="true">→</span></a>
+						</div>
+                ))
+              }
+			</div>
+		</div>
+	</div>
+	<div class="case reveal-on-scroll">
+		<div class="page-container flex">
+			<div class="home-section-desktop">
+				<div class="left">
+					<HomeTitle title="行业实战案例" subtitle="industry practical case"/>
+					<div class="case-tab flex flex-column">
+                      {
+                        caseList.map((item, index) => (
+								<div class="tab-item relative flex align-center" data-index-number={index}>
+									<i>——&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
+									<span>{item.title}</span>
+								</div>
+                        ))
+                      }
+					</div>
+					<MoreBtn href="./case.html?pageId=6a66c24ce39ec507d8232004"/>
+				</div>
+				<div class="right-box relative">
+					<div class="right">
+						<div class="case-swiper relative">
+							<div class="swiper-wrapper">
+                              {
+                                caseList.map(item => (
+										<div class="swiper-slide">
+                                          {item.bg_img && <img src={item.bg_img} alt={item.title}>}
+										</div>
+                                ))
+                              }
+							</div>
+						</div>
+					</div>
+                  {
+                    caseList.map(item => (
+							<div class="cate-info absolute">
+								<h5 class="cate-name hide-more-text" style="--lines: 1;">{item.title}</h5>
+								<hr>
+								<p class="cate-desc hide-more-text" style="--lines: 2;">{item.intro}</p>
+								<div class="swiper-btn absolute">
+									<div class="swiper-button-prev">
+										<img src="./img/left-arraw.png" alt="">
+									</div>
+									<div class="swiper-button-next">
+										<img src="./img/left-arraw.png" alt="">
+									</div>
+								</div>
+							</div>
+                    ))
+                  }
+				</div>
+			</div>
+			<div class="home-section-mobile case-mobile">
+				<div class="mobile-section-heading">
+					<p>INDUSTRY PRACTICAL CASE</p>
+					<h2>行业实战案例</h2>
+				</div>
+				<div class="mobile-segment" role="tablist" aria-label="案例分类">
+                  {
                     caseList.map((item, index) => (
-                      <article class="case-mobile__card" data-index-number={index}>
+							<button type="button" role="tab" data-index-number={index}>{item.title}</button>
+                    ))
+                  }
+				</div>
+              {
+                caseList.map((item, index) => (
+						<article class="case-mobile__card" data-index-number={index}>
                           {
                             item.bg_img && <img src={item.bg_img} alt={item.title}>
                           }
-                          <div>
-                              <h3 class="hide-more-text" style="--lines: 1;">{item.title}</h3>
-                              <p class="hide-more-text" style="--lines: 3;">{item.intro}</p>
-                          </div>
-                      </article>
+							<div>
+								<h3 class="hide-more-text" style="--lines: 1;">{item.title}</h3>
+								<p class="hide-more-text" style="--lines: 3;">{item.intro}</p>
+							</div>
+						</article>
+                ))
+              }
+
+				<a class="mobile-text-link" href="./case.html?pageId=6a66c24ce39ec507d8232004">查看全部案例 <span
+						aria-hidden="true">→</span></a>
+			</div>
+		</div>
+	</div>
+	<div class="case2 reveal-on-scroll">
+		<div class="page-container">
+			<div class="home-section-desktop">
+				<HomeTitle title="多样化轴承解决方案" subtitle="Industry practical case" color="white"/>
+				<div class="case-list flex flex-wrap">
+                  {
+                    case2List.map(item => (
+							<div class="case-item relative">
+								<h5 class="cate-name">{item.title}</h5>
+								<p class="cate-desc hide-more-text" style="--lines: 2;">{item.intro}</p>
+								<div class="arrow absolute">
+									<img src="./img/arrow2.png" alt="">
+								</div>
+							</div>
                     ))
-                }
+                  }
+				</div>
+			</div>
+			<div class="home-section-mobile solution-mobile">
+				<div class="mobile-section-heading mobile-section-heading--light">
+					<p>BEARING SOLUTIONS</p>
+					<h2>多样化轴承解决方案</h2>
+				</div>
+				<div class="solution-mobile__list">
+                  {
+                    case2List.map(item => (
+							<a href="./case.html?pageId=6a66c2943b7c8a0bdb25a5f3" class="solution-mobile__card">
+								<h3>{item.title}</h3>
+								<p class="hide-more-text" style="--lines: 2;">{item.intro}</p>
+								<span aria-hidden="true">→</span>
+							</a>
+                    ))
+                  }
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="news reveal-on-scroll">
+		<div class="page-container">
+			<div class="news-desktop">
+				<div class="top flex justify-between align-center">
+					<HomeTitle title="新闻动态" subtitle="news updates"/>
+					<Tabs tabs={articleTabs}/>
+				</div>
+              {
+                articleTabs.map((item, index) => (
+						<div class="bottom" id={`news-swiper-${item.id}`} data-index-number={index}>
+							<div class="swiper-wrapper">
+                              {
+                                articleList[item.id] && articleList[item.id].map(item2 => (
+											  <div class="swiper-slide interactive-card">
+												  <div class="info">
+													  <time class="date">{getTime(item2.create_time)}</time>
+													  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
+													  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
+													  <div class="arrow">
+														  <img src="./img/right-arraw.png" alt="" class="arrow">
+													  </div>
+												  </div>
+                                                {item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
+											  </div>
+                                ))
+                              }
+							</div>
+							<div class="swiper-btn absolute flex justify-between align-center">
+								<div class="swiper-button-prev">
+									<img src="./img/arrow2.png" alt="">
+								</div>
+								<div class="swiper-button-next">
+									<img src="./img/arrow2.png" alt="">
+								</div>
+							</div>
+						</div>
+                ))
+              }
+			</div>
+			<!--<div class="news-mobile">
+                <div class="news-mobile__heading">
+                    <h2>新闻动态</h2>
+                    <p>NEWS UPDATES</p>
+                </div>
+                <div class="news-mobile__tabs" role="tablist" aria-label="新闻分类">
+                    <button v-for="(item, index) in articleTabs" :key="item.id" type="button"
+                            :class="{active: index === articleTabIndex}" :aria-selected="index === articleTabIndex"
+                            role="tab" @click="changeArticleIndex(index)">{{item.title}}</button>
+                </div>
+                <div class="news-mobile__list">
+                    <a v-for="item in activeArticleList" :key="item.id" class="news-mobile__card"
+                       :href="`./newsDetails.html?id=${item.id}&cateId=${activeArticleTab.id}`">
+                        <img v-if="item.bg_img" :src="item.bg_img" :alt="item.title">
+                        <div class="news-mobile__card-content">
+                            <time>{{getTime(item.create_time)}}</time>
+                            <h3 class="hide-more-text" style="&#45;&#45;lines: 2;">{{item.title}}</h3>
+                            <p class="hide-more-text" style="&#45;&#45;lines: 2;">{{item.intro}}</p>
+                            <span aria-hidden="true">→</span>
+                        </div>
+                    </a>
+                </div>
+                <a class="news-mobile__more" href="./news.html">查看全部新闻 <span aria-hidden="true">→</span></a>
+            </div>-->
+		</div>
+	</div>
 
-                <a class="mobile-text-link" href="./case.html?pageId=6a66c24ce39ec507d8232004">查看全部案例 <span aria-hidden="true">→</span></a>
-            </div>
-        </div>
-    </div>
+	<script is:inline src="./js/swiper-bundle.min.js"></script>
+	<script>
+      function setProductIndex(index = 0) {
+        $('.swiper-pagination-box').eq(index + 1).addClass('active').siblings().removeClass('active');
+      }
 
-    <script is:inline src="./js/swiper-bundle.min.js"></script>
-    <script>
-        function setProductIndex(index = 0) {
-            $('.swiper-pagination-box').eq(index + 1).addClass('active').siblings().removeClass('active');
-        }
+      function setBrandSwiperIndex(index = 0) {
+        $('.brand-introduction .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+      }
 
-        function setBrandSwiperIndex(index = 0) {
-            $('.brand-introduction .tab-item').eq(index).addClass('active').siblings().removeClass('active');
-        }
-        function setBrandIndex(index = 0) {
-            $('.brand-introduction .mobile-segment button').eq(index).addClass('active').siblings().removeClass('active');
-            $('.brand-introduction .brand-mobile__content').eq(index).addClass('active').siblings().removeClass('active');
-        }
+      function setBrandIndex(index = 0) {
+        $('.brand-introduction .mobile-segment button').eq(index).addClass('active').siblings().removeClass('active');
+        $('.brand-introduction .brand-mobile__content').eq(index).addClass('active').siblings().removeClass('active');
+      }
 
-        function setCaseIndex(index = 0) {
-            $('.case .mobile-segment button').eq(index).addClass('active').attr('aria-selected', 'true').siblings().removeClass('active').attr('aria-selected', 'false');
-            $('.case .case-mobile__card').eq(index).addClass('active').siblings().removeClass('active');
-        }
-        function setCaseSwiperIndex(index = 0) {
-            $('.case-tab .tab-item').eq(index).addClass('active').siblings().removeClass('active');
-            $('.case .cate-info').eq(index).addClass('active').siblings().removeClass('active');
-        }
+      function setCaseIndex(index = 0) {
+        $('.case .mobile-segment button').eq(index).addClass('active').attr('aria-selected', 'true').siblings().removeClass('active').attr('aria-selected', 'false');
+        $('.case .case-mobile__card').eq(index).addClass('active').siblings().removeClass('active');
+      }
 
-        (function (){
-            const productSwiper = new Swiper(".product-swiper", {
-                loop: true,
-                autoplay: true,
-                autoplayDisableOnInteraction: false,
-                slidesPerView: 1,
-                spaceBetween: 16,
-                breakpoints: {
-                    768: {
-                        slidesPerView: 1.35,
-                        spaceBetween: 24,
-                    },
-                    1200: {
-                        slidesPerView: 1,
-                        spaceBetween: 0,
-                    },
-                },
-                navigation: {
-                    nextEl: ".production-list .swiper-button-next",
-                    prevEl: ".production-list .swiper-button-prev",
-                },
-                on: {
-                    init: (swiper) => {
-                        setProductIndex(swiper.realIndex)
-                    },
-                    slideChange: (swiper) => {
-                        setProductIndex(swiper.realIndex)
-                    }
-                }
-            });
-            $('.production-list .swiper-pagination').on('click', '.swiper-pagination-box', function () {
-                productSwiper.slideTo($(this).data('index-number'))
-            })
+      function setCaseSwiperIndex(index = 0) {
+        $('.case-tab .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+        $('.case .cate-info').eq(index).addClass('active').siblings().removeClass('active');
+      }
 
-            setBrandSwiperIndex(0);
-            setBrandIndex(0);
-            const brandSwiper = new Swiper(".brand-introduction .tab-panel", {
-                navigation: {
-                    nextEl: ".brand-introduction .swiper-button-next",
-                    prevEl: ".brand-introduction .swiper-button-prev",
-                },
-            });
-            brandSwiper.on('slideChange', () => {
-                setBrandSwiperIndex(brandSwiper.activeIndex);
-            })
-            window.addEventListener('tab-change', (event) => {
-                brandSwiper.slideTo(event.detail.activeIndex);
-            });
-            $('.case-tab .tab-item').on('click', function () {
-                setBrandIndex($(this).data('index-number'));
-            });
-            $('.brand-introduction .mobile-segment button').on('click', function () {
-                setBrandIndex($(this).data('index-number'));
-            });
+      function setArticleIndex(index = 0) {
+        $('.news .news-desktop .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+        $('.news .news-desktop .bottom').eq(index).addClass('active').siblings().removeClass('active');
+        $('.news-mobile__tabs button').eq(index).addClass('active').siblings().removeClass('active');
+        $('.news-mobile__list').eq(index).addClass('active').siblings().removeClass('active');
+      }
 
-            const caseSwiper = new Swiper(".case-swiper", {
-                spaceBetween: 30,
-                loop: true,
-                autoplay: true,
-                autoplayDisableOnInteraction: false,
-                navigation: {
-                    nextEl: ".case .swiper-button-next",
-                    prevEl: ".case .swiper-button-prev",
-                },
-                on: {
-                    init: (swiper) => {
-                        setCaseSwiperIndex(swiper.realIndex)
-                    },
-                    slideChange: (swiper) => {
-                        setCaseSwiperIndex(swiper.realIndex)
-                    }
-                }
-            });
-            $('.case .home-section-desktop .tab-item').on('click', function () {
-                caseSwiper.slideTo($(this).data('index-number'));
-            });
-            setCaseIndex(0);
-            $('.case .mobile-segment button').on('click', function () {
-                setCaseIndex($(this).data('index-number'));
-            });
-        })()
-    </script>
+      (function () {
+        const productSwiper = new Swiper(".product-swiper", {
+          loop: true,
+          autoplay: true,
+          autoplayDisableOnInteraction: false,
+          slidesPerView: 1,
+          spaceBetween: 16,
+          breakpoints: {
+            768: {
+              slidesPerView: 1.35,
+              spaceBetween: 24,
+            },
+            1200: {
+              slidesPerView: 1,
+              spaceBetween: 0,
+            },
+          },
+          navigation: {
+            nextEl: ".production-list .swiper-button-next",
+            prevEl: ".production-list .swiper-button-prev",
+          },
+          on: {
+            init: (swiper) => {
+              setProductIndex(swiper.realIndex)
+            },
+            slideChange: (swiper) => {
+              setProductIndex(swiper.realIndex)
+            }
+          }
+        });
+        $('.production-list .swiper-pagination').on('click', '.swiper-pagination-box', function () {
+          productSwiper.slideToLoop($(this).data('index-number'))
+        })
+
+        setBrandSwiperIndex(0);
+        setBrandIndex(0);
+        const brandSwiper = new Swiper(".brand-introduction .tab-panel", {
+          navigation: {
+            nextEl: ".brand-introduction .swiper-button-next",
+            prevEl: ".brand-introduction .swiper-button-prev",
+          },
+        });
+        brandSwiper.on('slideChange', () => {
+          setBrandSwiperIndex(brandSwiper.activeIndex);
+        })
+        window.addEventListener('tab-change', (event) => {
+          brandSwiper.slideTo(event.detail.activeIndex);
+        });
+        $('.case-tab .tab-item').on('click', function () {
+          setBrandIndex($(this).data('index-number'));
+        });
+        $('.brand-introduction .mobile-segment button').on('click', function () {
+          setBrandIndex($(this).data('index-number'));
+        });
+
+        const caseSwiper = new Swiper(".case-swiper", {
+          spaceBetween: 30,
+          loop: true,
+          autoplay: true,
+          autoplayDisableOnInteraction: false,
+          navigation: {
+            nextEl: ".case .swiper-button-next",
+            prevEl: ".case .swiper-button-prev",
+          },
+          on: {
+            init: (swiper) => {
+              setCaseSwiperIndex(swiper.realIndex)
+            },
+            slideChange: (swiper) => {
+              setCaseSwiperIndex(swiper.realIndex)
+            }
+          }
+        });
+        $('.case .home-section-desktop .tab-item').on('click', function () {
+          caseSwiper.slideToLoop($(this).data('index-number'));
+        });
+        setCaseIndex(0);
+        $('.case .mobile-segment button').on('click', function () {
+          setCaseIndex($(this).data('index-number'));
+        });
+
+		  setArticleIndex(0)
+        $('.news .bottom').each(function (index, item) {
+          const swiper = new Swiper(item, {
+            slidesPerView: 1,
+            spaceBetween: 16,
+            observer: true,
+            observeParents: true,
+            breakpoints: {
+              768: {
+                slidesPerView: 1.5,
+                spaceBetween: 24,
+              },
+              1200: {
+                slidesPerView: 2.5,
+                spaceBetween: 67,
+              },
+              1859: {
+                slidesPerView: 2.5,
+                spaceBetween: 67,
+              },
+            },
+            navigation: {
+              nextEl: `.news .bottom[data-index-number="${index}"] .swiper-button-next`,
+              prevEl: `.news .bottom[data-index-number="${index}"] .swiper-button-prev`,
+            },
+          });
+        })
+      })()
+	</script>
 </Layout>
