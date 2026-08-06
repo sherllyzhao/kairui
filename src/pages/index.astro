@@ -120,22 +120,28 @@ const caseList = caseRes?.data?.slice(0, 3);
                     </div>
                 </div>
             </div>
-            <!--<div class="home-section-mobile brand-mobile">
-                <div class="mobile-section-heading mobile-section-heading&#45;&#45;light">
+            <div class="home-section-mobile brand-mobile">
+                <div class="mobile-section-heading mobile-section-heading--light">
                     <p>ABOUT GRONDE</p>
                     <h2>关于我们</h2>
                 </div>
-                <div class="mobile-segment mobile-segment&#45;&#45;light" role="tablist" aria-label="关于我们">
-                    <button v-for="(item, index) in brandTabs" :key="item.id" type="button" role="tab"
-                            :class="{active: index === brandRealIndex}" :aria-selected="index === brandRealIndex"
-                            @click="changeBrandIndex(index)">{{item.title}}</button>
+                <div class="mobile-segment mobile-segment--light" role="tablist" aria-label="关于我们">
+                    {
+                        brandTabs.map((item, index) => (
+                            <button type="button" role="tab" data-index-number={index}>{item.title}</button>
+                        ))
+                    }
                 </div>
-                <article class="brand-mobile__content" v-if="currentBrand">
-                    <h3>{{currentBrand.title}}</h3>
-                    <p class="hide-more-text" style="&#45;&#45;lines: 5;">{{currentBrand.content}}</p>
-                    <a class="mobile-text-link mobile-text-link&#45;&#45;light" href="./about.html">了解凯瑞 <span aria-hidden="true">→</span></a>
-                </article>
-            </div>-->
+                {
+                    brandTabs.map((item, index) => (
+                        <div class="brand-mobile__content" data-index-number={index}>
+                            <h3>{item.title}</h3>
+                            <p class="hide-more-text" style="--lines: 5;">{item.content}</p>
+                            <a class="mobile-text-link mobile-text-link--light" href="./about.html">了解凯瑞 <span aria-hidden="true">→</span></a>
+                        </div>
+                    ))
+                }
+            </div>
         </div>
     </div>
     <div class="case reveal-on-scroll">
@@ -145,8 +151,8 @@ const caseList = caseRes?.data?.slice(0, 3);
                     <HomeTitle title="行业实战案例" subtitle="industry practical case" />
                     <div class="case-tab flex flex-column">
                         {
-                            caseList.map(item => (
-                                <div class="tab-item relative flex align-center">
+                            caseList.map((item, index) => (
+                                <div class="tab-item relative flex align-center" data-index-number={index}>
                                     <i>——&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
                                     <span>{item.title}</span>
                                 </div>
@@ -188,25 +194,34 @@ const caseList = caseRes?.data?.slice(0, 3);
                     }
                 </div>
             </div>
-            <!--<div class="home-section-mobile case-mobile">
+            <div class="home-section-mobile case-mobile">
                 <div class="mobile-section-heading">
                     <p>INDUSTRY PRACTICAL CASE</p>
                     <h2>行业实战案例</h2>
                 </div>
                 <div class="mobile-segment" role="tablist" aria-label="案例分类">
-                    <button v-for="(item, index) in caseList" :key="item.id" type="button" role="tab"
-                            :class="{active: index === caseRealIndex}" :aria-selected="index === caseRealIndex"
-                            @click="changeCaseIndex(index)">{{item.title}}</button>
+                    {
+                      caseList.map((item, index) => (
+                        <button type="button" role="tab" data-index-number={index}>{item.title}</button>
+                      ))
+                    }
                 </div>
-                <article class="case-mobile__card" v-if="currentCase">
-                    <img v-if="currentCase.bg_img" :src="currentCase.bg_img" :alt="currentCase.title">
-                    <div>
-                        <h3 class="hide-more-text" style="&#45;&#45;lines: 1;">{{currentCase.title}}</h3>
-                        <p class="hide-more-text" style="&#45;&#45;lines: 3;">{{currentCase.intro}}</p>
-                    </div>
-                </article>
+                {
+                    caseList.map((item, index) => (
+                      <article class="case-mobile__card" data-index-number={index}>
+                          {
+                            item.bg_img && <img src={item.bg_img} alt={item.title}>
+                          }
+                          <div>
+                              <h3 class="hide-more-text" style="--lines: 1;">{item.title}</h3>
+                              <p class="hide-more-text" style="--lines: 3;">{item.intro}</p>
+                          </div>
+                      </article>
+                    ))
+                }
+
                 <a class="mobile-text-link" href="./case.html?pageId=6a66c24ce39ec507d8232004">查看全部案例 <span aria-hidden="true">→</span></a>
-            </div>-->
+            </div>
         </div>
     </div>
 
@@ -216,16 +231,28 @@ const caseList = caseRes?.data?.slice(0, 3);
             $('.swiper-pagination-box').eq(index + 1).addClass('active').siblings().removeClass('active');
         }
 
-        function setBrandIndex(index = 0) {
+        function setBrandSwiperIndex(index = 0) {
             $('.brand-introduction .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+        }
+        function setBrandIndex(index = 0) {
+            $('.brand-introduction .mobile-segment button').eq(index).addClass('active').siblings().removeClass('active');
+            $('.brand-introduction .brand-mobile__content').eq(index).addClass('active').siblings().removeClass('active');
         }
 
         function setCaseIndex(index = 0) {
+            $('.case .mobile-segment button').eq(index).addClass('active').attr('aria-selected', 'true').siblings().removeClass('active').attr('aria-selected', 'false');
+            $('.case .case-mobile__card').eq(index).addClass('active').siblings().removeClass('active');
+        }
+        function setCaseSwiperIndex(index = 0) {
             $('.case-tab .tab-item').eq(index).addClass('active').siblings().removeClass('active');
+            $('.case .cate-info').eq(index).addClass('active').siblings().removeClass('active');
         }
 
         (function (){
             const productSwiper = new Swiper(".product-swiper", {
+                loop: true,
+                autoplay: true,
+                autoplayDisableOnInteraction: false,
                 slidesPerView: 1,
                 spaceBetween: 16,
                 breakpoints: {
@@ -244,11 +271,10 @@ const caseList = caseRes?.data?.slice(0, 3);
                 },
                 on: {
                     init: (swiper) => {
-                        console.log("🚀 ~ init ~ swiper: ", swiper);
-                        setProductIndex(swiper.activeIndex)
+                        setProductIndex(swiper.realIndex)
                     },
                     slideChange: (swiper) => {
-                        setProductIndex(swiper.activeIndex)
+                        setProductIndex(swiper.realIndex)
                     }
                 }
             });
@@ -256,6 +282,7 @@ const caseList = caseRes?.data?.slice(0, 3);
                 productSwiper.slideTo($(this).data('index-number'))
             })
 
+            setBrandSwiperIndex(0);
             setBrandIndex(0);
             const brandSwiper = new Swiper(".brand-introduction .tab-panel", {
                 navigation: {
@@ -264,14 +291,43 @@ const caseList = caseRes?.data?.slice(0, 3);
                 },
             });
             brandSwiper.on('slideChange', () => {
-                setBrandIndex(brandSwiper.activeIndex);
+                setBrandSwiperIndex(brandSwiper.activeIndex);
             })
-
             window.addEventListener('tab-change', (event) => {
                 brandSwiper.slideTo(event.detail.activeIndex);
             });
+            $('.case-tab .tab-item').on('click', function () {
+                setBrandIndex($(this).data('index-number'));
+            });
+            $('.brand-introduction .mobile-segment button').on('click', function () {
+                setBrandIndex($(this).data('index-number'));
+            });
 
+            const caseSwiper = new Swiper(".case-swiper", {
+                spaceBetween: 30,
+                loop: true,
+                autoplay: true,
+                autoplayDisableOnInteraction: false,
+                navigation: {
+                    nextEl: ".case .swiper-button-next",
+                    prevEl: ".case .swiper-button-prev",
+                },
+                on: {
+                    init: (swiper) => {
+                        setCaseSwiperIndex(swiper.realIndex)
+                    },
+                    slideChange: (swiper) => {
+                        setCaseSwiperIndex(swiper.realIndex)
+                    }
+                }
+            });
+            $('.case .home-section-desktop .tab-item').on('click', function () {
+                caseSwiper.slideTo($(this).data('index-number'));
+            });
             setCaseIndex(0);
+            $('.case .mobile-segment button').on('click', function () {
+                setCaseIndex($(this).data('index-number'));
+            });
         })()
     </script>
 </Layout>
