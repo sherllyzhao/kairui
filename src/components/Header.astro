@@ -19,7 +19,7 @@ try {
 
   // 三个分类请求相互独立，并行获取
   const [about
-	  , goodsRes, contentRes] = await Promise.all([
+    , goodsRes, contentRes] = await Promise.all([
     requestData('category', {sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
     requestData('category', {sort: 'sortAsc', category_id: '6a605df319df9b3e2e2b4af2'}),
     requestData('category', {sort: 'sortAsc', category_id: '6a65771ba6ba0c2e856b11c8'})
@@ -39,6 +39,7 @@ try {
     const goodsItem = navList.find(item => item.id === navMap['产品展示']);
     if (goodsItem) {
       goodsItem["children"] = goods;
+      goodsItem["useCateAndPage"] = true;
     }
   }
   // 内容
@@ -47,6 +48,7 @@ try {
     const contentItem = navList.find(item => item.id === navMap['新闻动态']);
     if (contentItem) {
       contentItem["children"] = content;
+      contentItem["useCateAndPage"] = true;
     }
   }
 } catch (error) {
@@ -75,24 +77,27 @@ const lastPath = pathnameArr[pathnameArr.length - 1];
 		<div class="nav f-h flex align-center">
 			<nav class="f-h">
 				<ul class="flex align-center justify-between first-nav f-h">
-					{
-						navList.length && navList.map((item: any) => {
-							return <li class:list={['relative f-h flex align-center', {active: lastPath ? '/' + lastPath === item.link : item.link === '/index.html'}]}>
-								<a href={`.${item.link}`}>{item.title}</a>
-								{item.children && item.children.length > 0 && (
+                  {
+                    navList.length && navList.map((item: any) => {
+                      return <li class:list={['relative f-h flex align-center', {active: lastPath ? '/' + lastPath === item.link : item.link === '/index.html'}]}>
+						  {
+							  (item.useCateAndPage && item.children[0]) ? <a href={`.${item.link.replace(/\.html$/, '')}/${item.children[0].id}/1`}>{item.title}</a> : <a href={`.${item.link}`}>{item.title}</a>
+						  }
+							{item.children && item.children.length > 0 && (
 									<div class="second-nav">
 										<ul>
-											{item.children.map((child: any) => (
-												<li>
-													{child.url ? <a href={`.${child.url}`}>{child.title}</a> : <a href={`.${item.link}?category=${child.id}`}>{child.title}</a>}
-												</li>
-											))}
+										  {item.children.map((child: any) => (
+											  <li>
+												{child.url ? <a href={`.${child.url}`}>{child.title}</a> :
+														<a href={`.${item.link.replace(/\.html$/, '')}/${child.id}/1`}>{child.title}</a>}
+											  </li>
+										  ))}
 										</ul>
 									</div>
-								)}
-							</li>
-						})
-					}
+							)}
+					  </li>
+                    })
+                  }
 				</ul>
 			</nav>
 			<a href={toEn} class="change-language-site flex align-center justify-center">
@@ -103,19 +108,21 @@ const lastPath = pathnameArr[pathnameArr.length - 1];
 </header>
 
 <script is:inline>
-	(function (){
-		let isScrolled = false;
-		function handleScroll() {
-			isScrolled = window.scrollY > 0;
-			$('header').toggleClass('scrolled', isScrolled);
-		}
-		window.addEventListener('scroll', handleScroll);
+  (function () {
+    let isScrolled = false;
 
-		let mobileMenuOpen = false;
-		$('.mobile-menu-toggle').click(function () {
-			mobileMenuOpen = !mobileMenuOpen;
-			$(this).attr('aria-expanded', mobileMenuOpen);
-			$('.nav').toggleClass('open', mobileMenuOpen);
-		})
-	})()
+    function handleScroll() {
+      isScrolled = window.scrollY > 0;
+      $('header').toggleClass('scrolled', isScrolled);
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    let mobileMenuOpen = false;
+    $('.mobile-menu-toggle').click(function () {
+      mobileMenuOpen = !mobileMenuOpen;
+      $(this).attr('aria-expanded', mobileMenuOpen);
+      $('.nav').toggleClass('open', mobileMenuOpen);
+    })
+  })()
 </script>

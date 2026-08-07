@@ -1,0 +1,94 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Banner from "../../../components/Banner.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import { requestData } from "../../../assets/js/jzt_common";
+
+export async function getStaticPaths() {
+	const rootCategoryId = "6a605df319df9b3e2e2b4af2";
+	const pageSize = 10;
+
+	const toList = (result) =>
+		Array.isArray(result) ? result : result?.data ?? [];
+
+	const categoryResult = await requestData("category", {
+		sort: "sortAsc",
+		category_id: rootCategoryId,
+		data_type: "list",
+		limit: -1,
+	});
+
+	const categories = toList(categoryResult);
+	const paths = [];
+
+	for (const category of categories) {
+		const goodsResult = await requestData("goods", {
+			sort: "sortAsc",
+			category_id: category.id,
+			data_type: "list",
+			limit: -1,
+		});
+
+		const goods = toList(goodsResult);
+		const lastPage = Math.max(1, Math.ceil(goods.length / pageSize));
+
+		for (let page = 1; page <= lastPage; page++) {
+			paths.push({
+				params: {
+					categoryId: String(category.id),
+					page: String(page),
+				},
+			});
+		}
+	}
+
+	return paths;
+}
+
+const { categoryId, page: pageParam } = Astro.params;
+const currentPage = Math.max(1, Number(pageParam) || 1);
+
+const cateResult = await requestData("category", {
+	sort: "sortAsc",
+	category_id: "6a605df319df9b3e2e2b4af2",
+	data_type: "list",
+	limit: -1,
+});
+
+const cateList = Array.isArray(cateResult)
+	? cateResult
+	: cateResult?.data ?? [];
+
+const goodsResult = await requestData("goods", {
+	sort: "sortAsc",
+	category_id: categoryId,
+	page: currentPage,
+	limit: 10,
+});
+
+const productList = goodsResult?.data ?? [];
+const total = goodsResult?.total ?? 0;
+const lastPage = goodsResult?.last_page ?? 1;
+---
+
+
+<Layout>
+	<link rel="stylesheet" href="/css/breadcrumbs.css">
+	<link rel="stylesheet" href="/css/product.css" />
+
+	<Banner id="6a5d9b8c64fdfb541468e9c2" />
+	<Breadcrumbs pageName="产品展示" tabs={cateList} usePageName={true} />
+
+	<script define:vars={{cateList}}>
+      function getCategoryIndexFromUrl (categories) {
+        const categoryQueryKey = 'category';
+        const categoryId = new URL(window.location.href).searchParams.get(categoryQueryKey);
+        const index = categories.findIndex(item => String(item.id) === categoryId);
+        return index === -1 ? 0 : index;
+      }
+      (function (){
+        const categoryIndex = getCategoryIndexFromUrl(cateList);
+        console.log(categoryIndex)
+      })()
+	</script>
+</Layout>
