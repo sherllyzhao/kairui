@@ -84,7 +84,7 @@ const lastPath = pathnameArr[pathnameArr.length - 1];
 										<ul>
 											{item.children.map((child: any) => (
 												<li>
-													<a href={`.${item.link}?category=${child.id}`}>{child.title}</a>
+													{child.url ? <a href={`.${child.url}`}>{child.title}</a> : <a href={`.${item.link}?category=${child.id}`}>{child.title}</a>}
 												</li>
 											))}
 										</ul>
