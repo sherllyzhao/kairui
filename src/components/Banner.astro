@@ -2,8 +2,8 @@
 import {requestData} from "../assets/js/jzt_common";
 const {id} = Astro.props;
 
-let bannerList = [];
-let navInfo = {};
+let bannerList: any[] = [];
+let navInfo: any = {};
 let bannerTotal = 0;
 let bannerImg = '';
 let bannerType = 'banner';
@@ -45,12 +45,13 @@ try {
 	</div>
 	<div class="swiper-pagination"></div>
 </div> :
-<div class="banner-image">
-	<!--<slot v-if="hasDefaultSlot"></slot>
-	<div v-else class="banner-image-content flex align-center justify-center flex-column f-h">
-		<h2>{{navInfo.title}}</h2>
-		<h4>{{navInfo.enTitle}}</h4>
-	</div>-->
+<div class="banner-image" style={{backgroundImage: `url(${bannerImg})`}}>
+	{
+		Astro.slots.has('default') ? <slot name="default"></slot> : <div class="banner-image-content flex align-center justify-center flex-column f-h">
+		<h2>{navInfo.title}</h2>
+		<h4>{navInfo.enTitle}</h4>
+	</div>
+	}
 </div>}
 
 <script>

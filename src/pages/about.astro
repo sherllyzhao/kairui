@@ -1,3 +1,24 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import Banner from "../components/Banner.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import {requestData} from "../assets/js/jzt_common";
 
+const [cateListRes] = await Promise.all([
+  requestData('category', {sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
+])
+
+const cateList = cateListRes.data;
+const pageName = cateListRes.data?.[0]?.title;
 ---
+
+<Layout>
+	<link rel="stylesheet" href="./css/about.css">
+	<link rel="stylesheet" href="./css/breadcrumbs.css">
+
+	<Banner id="6a5d9b79d276c860d422cca0" />
+    <Breadcrumbs tabs={cateList} userPageName={true} pageName={pageName} name="about-breadcrumbs" />
+
+    <script is:inline>
+    </script>
+</Layout>

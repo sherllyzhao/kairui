@@ -1,0 +1,98 @@
+---
+const {tabs = [], usePageName = false, pageName = '', activeIndex = 0, name = 'breadcrumbs', activeQuery = '', activeField = 'url'} = Astro.props;
+
+const currentPageName = usePageName ? pageName : (tabs[activeIndex]?.title ?? props.pageName);
+---
+
+<div class="breadcrumbs-wrap my-breadcrumbs">
+	<div class="flex align-center f-h">
+		<div class:list={['breadcrumbs flex align-center f-h', {'flex-1': tabs.length === 0}]}>当前位置：<a href="/">首页</a> &nbsp; {currentPageName ? '> ' + currentPageName : ''}</div>
+		{
+			tabs.length && <div class="cates f-h flex-1 flex align-center">
+				{
+					tabs.map((item, index) => (
+						<div class:list={['cate-item', 'f-h', 'flex', 'align-center', {'active': index === activeIndex}]} data-index={index} data-name={name}>
+							<a href={item.url ? '.' + item.url : 'javascript:void(0);'} :style={`pointer-events: ${item.url ? 'auto' : 'none'}`}>{item.title}</a>
+						</div>
+					))
+				}
+			</div>
+		}
+	</div>
+</div>
+
+<script define:vars={{tabs, activeQuery}}>
+	function normalizePath (path) {
+		const normalizedPath = decodeURIComponent(path)
+			.replace(/\\/g, '/')
+			.replace(/^\/[A-Za-z]:/, '')
+			.replace(/\/+$/, '');
+		return normalizedPath || '/';
+	}
+
+	function scrollToHash () {
+		if(!window.location.hash) return;
+
+		const targetId = decodeURIComponent(window.location.hash.slice(1));
+		document.getElementById(targetId)?.scrollIntoView({behavior: 'auto', block: 'start'});
+	}
+
+	let activeIndex = 0;
+	function updateActiveIndex ()  {
+		if(!tabs.length){
+			activeIndex = -1;
+			return;
+		}
+
+		const currentUrl = new URL(window.location.href);
+		const currentPath = normalizePath(currentUrl.pathname);
+		const currentHash = currentUrl.hash;
+		const isSamePath = (tabPath) => currentPath === tabPath || currentPath.endsWith(tabPath);
+
+		// tabs 是异步加载的，数据到达后再执行匹配；如果配置了 query，优先按 query 值匹配 tab。
+		const queryValue = activeQuery ? currentUrl.searchParams.get(activeQuery) : null;
+		let index = queryValue
+			? tabs.findIndex(item => String(item?.[activeField]) === queryValue)
+			: -1;
+
+		// 没有匹配到 query 时，继续按完整的 pathname + hash 匹配，兼容原有页面。
+		if(index === -1){
+			index = tabs.findIndex(item => {
+				if(!item?.url) return false;
+				const tabUrl = new URL(item.url, window.location.href);
+				return isSamePath(normalizePath(tabUrl.pathname)) && tabUrl.hash === currentHash;
+			});
+		}
+
+		// 页面没有 hash 时，按 pathname 匹配当前页面，并选中该页面的第一个分类。
+		if(index === -1 && !currentHash){
+			index = tabs.findIndex(item => {
+				if(!item?.url) return false;
+				const tabUrl = new URL(item.url, window.location.href);
+				return isSamePath(normalizePath(tabUrl.pathname));
+			});
+		}
+
+		// 同页面但 hash 不在 tabs 中时，至少保持第一个分类处于激活状态。
+		activeIndex = index === -1 ? 0 : index;
+		$(`.cate-item[data-index="${activeIndex}"]`).addClass('active').trigger('click').siblings().removeClass('active');
+	}
+	function updateByTabs () {
+		updateActiveIndex();
+		requestAnimationFrame(scrollToHash);
+	}
+
+	(function (){
+		updateByTabs();
+
+		window.addEventListener('hashchange', updateByTabs);
+
+		$('.cate-item').on('click', function (){
+			const index = $(this).data('index');
+			const name = $(this).data('name');
+			window.dispatchEvent(new CustomEvent('breadcrumb-change', {
+				detail: { activeIndex: index, name:  name}
+			}));
+		})
+	})()
+</script>

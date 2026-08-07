@@ -14,20 +14,13 @@ const {tabs = [], name = 'tabs'} = Astro.props;
 </div>
 
 <script>
-  const tabs = document.querySelectorAll('.my-tabs');
-  const tabItems = [];
-  tabs.forEach((item) => {
-    tabItems.push(item.querySelectorAll('.tab-item'));
-  });
-  tabItems.forEach((item) => {
-    item.forEach((item2) => {
-      item2.addEventListener('click', (e) => {
-        const index = e.target.dataset.index;
-        const name = e.target.dataset.name;
+  (function (){
+      $('.tab-item').on('click', function (){
+        const index = $(this).data('index');
+        const name = $(this).data('name');
         window.dispatchEvent(new CustomEvent('tab-change', {
           detail: { activeIndex: index, name:  name}
         }));
       })
-    })
-  })
+  })()
 </script>
