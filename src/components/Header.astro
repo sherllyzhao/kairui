@@ -55,6 +55,11 @@ try {
 
 const isEn = Astro.url.href.includes('/en');
 const toEn = isEn ? '/' : '/en';
+
+
+const pathnameStr = Astro.url.pathname;
+const pathnameArr = pathnameStr.split('/');
+const lastPath = pathnameArr[pathnameArr.length - 1];
 ---
 <header>
 	<div class="header flex align-center justify-between">
@@ -72,7 +77,7 @@ const toEn = isEn ? '/' : '/en';
 				<ul class="flex align-center justify-between first-nav f-h">
 					{
 						navList.length && navList.map((item: any) => {
-							return <li class="relative f-h flex align-center">
+							return <li class:list={['relative f-h flex align-center', {active: lastPath ? '/' + lastPath === item.link : item.link === '/index.html'}]}>
 								<a href={`.${item.link}`}>{item.title}</a>
 								{item.children && item.children.length > 0 && (
 									<div class="second-nav">
@@ -98,17 +103,19 @@ const toEn = isEn ? '/' : '/en';
 </header>
 
 <script is:inline>
-  let isScrolled = false;
-  function handleScroll() {
-    isScrolled = window.scrollY > 0;
-	$('header').toggleClass('scrolled', isScrolled);
-  }
-  window.addEventListener('scroll', handleScroll);
+	(function (){
+		let isScrolled = false;
+		function handleScroll() {
+			isScrolled = window.scrollY > 0;
+			$('header').toggleClass('scrolled', isScrolled);
+		}
+		window.addEventListener('scroll', handleScroll);
 
-  let mobileMenuOpen = false;
-  $('.mobile-menu-toggle').click(function () {
-    mobileMenuOpen = !mobileMenuOpen;
-    $(this).attr('aria-expanded', mobileMenuOpen);
-	$('.nav').toggleClass('open', mobileMenuOpen);
-  })
+		let mobileMenuOpen = false;
+		$('.mobile-menu-toggle').click(function () {
+			mobileMenuOpen = !mobileMenuOpen;
+			$(this).attr('aria-expanded', mobileMenuOpen);
+			$('.nav').toggleClass('open', mobileMenuOpen);
+		})
+	})()
 </script>

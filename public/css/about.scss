@@ -30,6 +30,12 @@
     font-size: clamp(16px, 0.9375vw, 30px);
     color: #FFFFFF;
     line-height: clamp(30px, 2.083vw, 50px);
+    .advantage-item{
+      display: none;
+      &.active{
+        display: block;
+      }
+    }
   }
 }
 
@@ -42,6 +48,10 @@
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
+}
+
+html.motion-ready .reveal-on-scroll.is-visible {
+  animation: sectionReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
