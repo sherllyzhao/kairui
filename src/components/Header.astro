@@ -71,14 +71,14 @@ const toEn = isEn ? '/' : '/en';
 			<nav class="f-h">
 				<ul class="flex align-center justify-between first-nav f-h">
 					{
-						navList.length && navList.map(item => {
-							return <li key={item.id} class="relative f-h flex align-center">
+						navList.length && navList.map((item: any) => {
+							return <li class="relative f-h flex align-center">
 								<a href={`.${item.link}`}>{item.title}</a>
 								{item.children && item.children.length > 0 && (
 									<div class="second-nav">
 										<ul>
-											{item.children.map(child => (
-												<li key={child.id}>
+											{item.children.map((child: any) => (
+												<li>
 													<a href={`.${item.link}?category=${child.id}`}>{child.title}</a>
 												</li>
 											))}
