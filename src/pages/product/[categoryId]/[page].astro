@@ -69,6 +69,16 @@ const goodsResult = await requestData("goods", {
 const productList = goodsResult?.data ?? [];
 const total = goodsResult?.total ?? 0;
 const lastPage = goodsResult?.last_page ?? 1;
+
+function getCategoryIndexFromUrl (categories) {
+	const categoryQueryKey = 'category';
+	const categoryId = new URL(Astro.request.url).searchParams.get(categoryQueryKey);
+	const index = categories.findIndex(item => String(item.id) === categoryId);
+	return index === -1 ? 0 : index;
+}
+
+const categoryIndex = getCategoryIndexFromUrl(cateList);
+const currentCateId = cateList[categoryIndex].id;
 ---
 
 
@@ -78,17 +88,29 @@ const lastPage = goodsResult?.last_page ?? 1;
 
 	<Banner id="6a5d9b8c64fdfb541468e9c2" />
 	<Breadcrumbs pageName="产品展示" tabs={cateList} usePageName={true} />
+	<div class="product-list-wrap reveal-on-scroll">
+		<div class="page-container">
+			<div class="product-list">
+				{
+					productList.map((item, index) => (
+						<a href={`./productDetails.html?id=${item.id}&cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
+							<!--<div class="product-img">
+								<img :src="item.bg_img" alt="">
+							</div>
+							<div class="product-desc">
+								<div class="product-name hide-more-text" style="&#45;&#45;lines: 1">{{item.title}}</div>
+							</div>-->
+						</a>
+					))
+				}
+			</div>
+			<!--<div v-if="!productList.length" class="product-empty">暂无产品</div>-->
+			<!--<pagination-app v-model="currentPage" :total="total" :page-size="pageSize" @change="getProductList"></pagination-app>-->
+		</div>
+	</div>
 
 	<script define:vars={{cateList}}>
-      function getCategoryIndexFromUrl (categories) {
-        const categoryQueryKey = 'category';
-        const categoryId = new URL(window.location.href).searchParams.get(categoryQueryKey);
-        const index = categories.findIndex(item => String(item.id) === categoryId);
-        return index === -1 ? 0 : index;
-      }
       (function (){
-        const categoryIndex = getCategoryIndexFromUrl(cateList);
-        console.log(categoryIndex)
       })()
 	</script>
 </Layout>

@@ -7,7 +7,13 @@ import {requestData, timeStamp2String} from "../assets/js/jzt_common";
 import Tabs from "../components/Tabs.astro";
 
 const [productRes, brandRes, caseRes, case2Res, articleTabsRes] = await Promise.all([
-  requestData('category', {type: 'goods', sort: 'sortAsc', page: 1, limit: 4}),
+  requestData('category', {
+    type: 'goods',
+    sort: 'sortAsc',
+    page: 1,
+    limit: -1,
+    category_id: '6a605df319df9b3e2e2b4af2'
+  }),
   requestData('category', {type: 'text', sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
   requestData('goods', {sort: 'sortAsc', category_id: '6a606770c2f86d512a7f5bd0', page: 1, limit: 3}),
   requestData('goods', {sort: 'sortAsc', category_id: '6a6067a0cd13e87ead2a9845', page: 1, limit: 4}),
@@ -76,18 +82,20 @@ const getTime = (time) => {
                           }
 						</div>
 					</div>
-					<div class="swiper-pagination flex align-center">
-                      {
-                        productList.map((item, index) => (
-								<div class="swiper-pagination-box relative cursor-pointer"
-								     data-index={(index + 1).toString().padStart(2, '0')} data-index-number={index}>
-									<span>{item.title}</span>
-								</div>
-                        ))
-                      }
-						<div class="swiper-pagination-box relative cursor-pointer">
-							<span><a href="./product.html">更多产品分类</a></span>
+					<div class="swiper-pagination flex align-center" thumbsSlider="">
+						<div class="swiper-wrapper">
+                          {
+                            productList.map((item, index) => (
+									<div class="swiper-pagination-box relative cursor-pointer swiper-slide"
+									     data-index={(index + 1).toString().padStart(2, '0')} data-index-number={index}>
+										<span>{item.title}</span>
+									</div>
+                            ))
+                          }
 						</div>
+						<!-- <div class="swiper-pagination-box relative cursor-pointer">
+                            <span><a href="./product.html">更多产品分类</a></span>
+                        </div> -->
 					</div>
 				</div>
 			</div>
@@ -292,22 +300,22 @@ const getTime = (time) => {
 					<Tabs tabs={articleTabs} name="news-tabs"/>
 				</div>
               {
-				  articleTabs.map((item, index) => (
+                articleTabs.map((item, index) => (
 						<div class="bottom" id={`news-swiper-${item.id}`} data-index-number={index}>
 							<div class="swiper-wrapper">
                               {
                                 articleList[item.id] && articleList[item.id].map(item2 => (
-								  <div class="swiper-slide interactive-card">
-									  <div class="info">
-										  <time class="date">{getTime(item2.create_time)}</time>
-										  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
-										  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
-										  <div class="arrow">
-											  <img src="./img/right-arraw.png" alt="" class="arrow">
-										  </div>
-									  </div>
-									{item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
-								  </div>
+											  <div class="swiper-slide interactive-card">
+												  <div class="info">
+													  <time class="date">{getTime(item2.create_time)}</time>
+													  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
+													  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
+													  <div class="arrow">
+														  <img src="./img/right-arraw.png" alt="" class="arrow">
+													  </div>
+												  </div>
+                                                {item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
+											  </div>
                                 ))
                               }
 							</div>
@@ -320,7 +328,7 @@ const getTime = (time) => {
 								</div>
 							</div>
 						</div>
-				  ))
+                ))
               }
 			</div>
 			<div class="news-mobile">
@@ -331,32 +339,32 @@ const getTime = (time) => {
 				<div class="news-mobile__tabs" role="tablist" aria-label="新闻分类">
                   {
                     articleTabs.map((item, index) => (
-						<button type="button" role="tab" data-index-number={index}>{item.title}</button>
+							<button type="button" role="tab" data-index-number={index}>{item.title}</button>
                     ))
                   }
 				</div>
-				{
-					articleTabs.map((item, index) => (
+              {
+                articleTabs.map((item, index) => (
 						<div class="news-mobile__list" data-index-number={index}>
-							{
-								articleList[item.id] && articleList[item.id].map(item2 => (
-									<a class="news-mobile__card"
-									   href={`./newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
-										{
-											item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
-										}
-										<div class="news-mobile__card-content">
-											<time>{getTime(item2.create_time)}</time>
-											<h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
-											<p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
-											<span aria-hidden="true">→</span>
-										</div>
-									</a>
-								))
-							}
+                          {
+                            articleList[item.id] && articleList[item.id].map(item2 => (
+										  <a class="news-mobile__card"
+										     href={`./newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
+                                            {
+                                              item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
+                                            }
+											  <div class="news-mobile__card-content">
+												  <time>{getTime(item2.create_time)}</time>
+												  <h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
+												  <p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
+												  <span aria-hidden="true">→</span>
+											  </div>
+										  </a>
+                            ))
+                          }
 						</div>
-					))
-				}
+                ))
+              }
 
 				<a class="news-mobile__more" href="./news.html">查看全部新闻 <span aria-hidden="true">→</span></a>
 			</div>
@@ -396,6 +404,13 @@ const getTime = (time) => {
       }
 
       (function () {
+        var productPageSwiper = new Swiper(".production-list .page-container .right .swiper-pagination", {
+          loop: true,
+          spaceBetween: 10,
+          slidesPerView: 5,
+          freeMode: true,
+          watchSlidesProgress: true,
+        });
         const productSwiper = new Swiper(".product-swiper", {
           loop: true,
           autoplay: true,
@@ -412,6 +427,9 @@ const getTime = (time) => {
               spaceBetween: 0,
             },
           },
+          thumbs: {
+            swiper: productPageSwiper,
+          },
           navigation: {
             nextEl: ".production-list .swiper-button-next",
             prevEl: ".production-list .swiper-button-prev",
@@ -425,9 +443,6 @@ const getTime = (time) => {
             }
           }
         });
-        $('.production-list .swiper-pagination').on('click', '.swiper-pagination-box', function () {
-          productSwiper.slideToLoop($(this).data('index-number'))
-        })
 
         setBrandSwiperIndex(0);
         setBrandIndex(0);
@@ -500,9 +515,9 @@ const getTime = (time) => {
             },
           });
         });
-		$('.news .news-mobile__tabs button').on('click', function () {
-			setArticleIndex($(this).data('index-number'));
-		})
+        $('.news .news-mobile__tabs button').on('click', function () {
+          setArticleIndex($(this).data('index-number'));
+        })
 
         window.addEventListener('tab-change', (event) => {
           if (event.detail.name === 'brand-tabs') {
