@@ -64,7 +64,9 @@ const getTime = (time) => {
 							<img src="./img/arrow2.png" alt="">
 						</div>
 					</div>
-					<MoreBtn href="./product.html"/>
+					{
+						productList?.[0] && <MoreBtn href={`/product/${productList?.[0]?.id}/1.html`}/>
+					}
 				</div>
 				<div class="right flex-1">
 					<div class="product-swiper">
@@ -118,7 +120,9 @@ const getTime = (time) => {
                     ))
                   }
 				</div>
-				<a class="mobile-text-link" href="./product.html">浏览全部产品 <span aria-hidden="true">→</span></a>
+				{
+					productList?.[0] && <a class="mobile-text-link" href={`/product/${productList?.[0]?.id}/1.html`}>浏览全部产品 <span aria-hidden="true">→</span></a>
+				}
 			</div>
 		</div>
 	</div>

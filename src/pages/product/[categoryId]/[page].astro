@@ -93,7 +93,7 @@ const currentCateId = cateList[categoryIndex].id;
 			<div class="product-list">
 				{
 					productList.map((item, index) => (
-						<a href={`./productDetails.html?id=${item.id}&cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
+						<a href={`/productDetails.html?id=${item.id}&cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
 							<!--<div class="product-img">
 								<img :src="item.bg_img" alt="">
 							</div>
