@@ -1,5 +1,5 @@
 ---
-const {total = 0, pageSize = 10, currentPage = 1} = Astro.props;
+const {total = 0, pageSize = 10, currentPage = 1, name = ''} = Astro.props;
 
 const totalPages = total > 0 ? Math.max(1, Math.ceil(total / Math.max(1, pageSize))) : 0;
 
@@ -19,22 +19,31 @@ const visiblePages = () => {
 ---
 
 {
-	totalPages > 1 && <nav class="pagination flex align-center justify-center" aria-label="分页导航">
-		<button class="pagination-button pagination-prev flex align-center justify-center" type="button"
-				disabled={currentPage <= 1} aria-label="上一页">
-			<span aria-hidden="true">上一页</span>
+	totalPages > 1 && <nav class="pagination flex align-center justify-center" data-name={name} aria-label="分页导航">
+		<button class="pagination-button pagination-prev flex align-center justify-center" type="button" disabled={currentPage <= 1} aria-label="上一页" to={currentPage - 1}>
+			<span aria-hidden="true" style="pointer-events: none">上一页</span>
 		</button>
 		{
 			visiblePages().map((page, index) => {
 				return page === 'ellipsis' ? <span class="pagination-ellipsis" aria-hidden="true">...</span> :
-					<button class:list={['pagination-button flex align-center justify-center', {active: page === currentPage}]} type="button" aria-current={page === currentPage ? 'page' : undefined} aria-label={'第 ' + page + ' 页'}>
+					<button class:list={['pagination-button flex align-center justify-center', {active: page === currentPage}]} type="button" aria-current={page === currentPage ? 'page' : undefined} aria-label={'第 ' + page + ' 页'} to={page}>
 						{page}
 					</button>
 			})
 		}
-		<button class="pagination-button pagination-next flex align-center justify-center" type="button"
-				disabled={currentPage >= totalPages} aria-label="下一页">
-			<span aria-hidden="true">下一页</span>
+		<button class="pagination-button pagination-next flex align-center justify-center" type="button" disabled={currentPage >= totalPages} aria-label="下一页" to={currentPage + 1}>
+			<span aria-hidden="true" style="pointer-events: none">下一页</span>
 		</button>
 	</nav>
 }
+
+<script define:vars={{currentPage, totalPages, name}}>
+	$(`.pagination[data-name="${name}"] .pagination-button`).on('click', function (e) {
+		const page = parseInt($(this).attr('to'));
+		const nextPage = Math.min(Math.max(1, page), totalPages);
+		if (nextPage === currentPage) return;
+		window.dispatchEvent(new CustomEvent('page-change', {
+			detail: { activeIndex: nextPage, name: name}
+		}));
+	})
+</script>

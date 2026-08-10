@@ -86,31 +86,29 @@ const setupScrollReveal = () => {
     const revealElements = Array.from(document.querySelectorAll('.reveal-on-scroll'));
     if (revealElements.length === 0) return;
 
+    const revealStates = new WeakMap();
+    const edgeBuffer = 140;
+
     const updateRevealState = (element, isVisible) => {
-        element.classList.toggle('is-visible', isVisible);
+        const nextVisible = Boolean(isVisible);
+        if (revealStates.get(element) === nextVisible) return;
+        revealStates.set(element, nextVisible);
+        element.classList.toggle('is-visible', nextVisible);
     };
 
     const revealVisibleElements = () => {
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
         revealElements.forEach(element => {
             const rect = element.getBoundingClientRect();
-            const isVisible = rect.top < viewportHeight * 0.88
-                && rect.bottom > viewportHeight * 0.12;
+            const wasVisible = revealStates.get(element) === true;
+            const buffer = wasVisible ? edgeBuffer : 0;
+            const isVisible = rect.top < viewportHeight * 0.88 + buffer
+                && rect.bottom > viewportHeight * 0.12 - buffer;
             updateRevealState(element, isVisible);
         });
     };
 
-    if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                updateRevealState(entry.target, entry.isIntersecting);
-            });
-        }, {rootMargin: '-12% 0px -12% 0px', threshold: 0.01});
-
-        revealElements.forEach(element => observer.observe(element));
-    }
-
-    // 首屏立即检查，并用 scroll 事件兼容 Observer 未触发的环境
+    // 统一使用手动判定，避免 IntersectionObserver 与 scroll 回调在边界互相覆盖。
     revealVisibleElements();
     window.addEventListener('scroll', revealVisibleElements, {passive: true});
     window.addEventListener('resize', revealVisibleElements, {passive: true});
