@@ -5,9 +5,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import { requestData } from "../../../assets/js/jzt_common";
 import Pagination from "../../../components/Pagination.astro";
 
-const pageSizeTotal = 10;
-
-export async function getStaticPaths() {
+export async function getStaticPaths({ paginate }) {
 	const pageSize = 10;
 	const rootCategoryId = "6a605df319df9b3e2e2b4af2";
 
@@ -33,23 +31,20 @@ export async function getStaticPaths() {
 		});
 
 		const goods = toList(goodsResult);
-		const lastPage = Math.max(1, Math.ceil(goods.length / pageSize));
-
-		for (let page = 1; page <= lastPage; page++) {
-			paths.push({
-				params: {
-					categoryId: String(category.id),
-					page: String(page),
-				},
-			});
-		}
+		const paginated = paginate(goods, {
+			params: { categoryId: String(category.id) },
+			pageSize,
+		});
+		paths.push(...paginated);
 	}
 
 	return paths;
 }
 
-const { categoryId, page: pageParam } = Astro.params;
-const currentPage = Math.max(1, Number(pageParam) || 1);
+const pageSize = 10;
+const { categoryId } = Astro.params;
+const { page } = Astro.props;
+const productList = page.data;
 
 const cateResult = await requestData("category", {
 	sort: "sortAsc",
@@ -62,26 +57,13 @@ const cateList = Array.isArray(cateResult)
 	? cateResult
 	: cateResult?.data ?? [];
 
-const goodsResult = await requestData("goods", {
-	sort: "sortAsc",
-	category_id: categoryId,
-	page: currentPage,
-	limit: pageSizeTotal,
-});
+const categoryIndex = cateList.findIndex(item => String(item.id) === categoryId);
+const currentCateId = categoryIndex !== -1 ? cateList[categoryIndex].id : cateList[0]?.id;
 
-const productList = goodsResult?.data ?? [];
-const total = goodsResult?.total ?? 0;
-const lastPage = goodsResult?.last_page ?? 1;
-
-function getCategoryIndexFromUrl (categories) {
-	const categoryQueryKey = 'category';
-	const categoryId = new URL(Astro.request.url).searchParams.get(categoryQueryKey);
-	const index = categories.findIndex(item => String(item.id) === categoryId);
-	return index === -1 ? 0 : index;
-}
-
-const categoryIndex = getCategoryIndexFromUrl(cateList);
-const currentCateId = cateList[categoryIndex].id;
+const cateListWithUrl = cateList.map(item => ({
+	...item,
+	url: `/product/${item.id}/1.html`
+}));
 ---
 
 
@@ -91,13 +73,13 @@ const currentCateId = cateList[categoryIndex].id;
 	<link rel="stylesheet" href="/css/pagination.css" />
 
 	<Banner id="6a5d9b8c64fdfb541468e9c2" />
-	<Breadcrumbs pageName="产品展示" tabs={cateList} usePageName={true} />
+	<Breadcrumbs pageName="产品展示" tabs={cateListWithUrl} usePageName={true} name="product-breadcrumbs" />
 	<div class="product-list-wrap reveal-on-scroll">
 		<div class="page-container">
 			<div class="product-list">
 				{
 					productList.length > 0 ? productList.map((item, index) => (
-						<a href={`/productDetails.html?id=${item.id}&cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
+						<a href={`/productDetails/${item.id}.html?cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
 							<div class="product-img">
 								<img src={item.bg_img} alt="">
 							</div>
@@ -108,12 +90,16 @@ const currentCateId = cateList[categoryIndex].id;
 					)) : <div class="product-empty">暂无产品</div>
 				}
 			</div>
-			<Pagination total={total} pageSize={pageSizeTotal} currentPage={1} />
+			<Pagination total={page.total} pageSize={pageSize} currentPage={page.currentPage} />
 		</div>
 	</div>
 
-	<script is:inline>
-      (function (){
-      })()
+	<script define:vars={{cateListWithUrl}}>
+		window.addEventListener('breadcrumb-change', (e) => {
+			if(e.detail.name === "product-breadcrumbs"){
+				const categoryId = cateListWithUrl[e.detail.activeIndex]?.id;
+				window.location.href = `/product/${categoryId}/1`;
+			}
+		})
 	</script>
 </Layout>

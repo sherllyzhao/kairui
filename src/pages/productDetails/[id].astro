@@ -1,0 +1,45 @@
+---
+import { requestData } from "../../assets/js/jzt_common";
+
+export async function getStaticPaths() {
+	const goodsResult = await requestData("goods", {
+		sort: "sortAsc",
+		data_type: "list",
+		limit: -1,
+	});
+
+	const list = Array.isArray(goodsResult)
+		? goodsResult
+		: goodsResult?.data ?? [];
+		console.log("🚀 ~ getStaticPaths ~ list: ", list);
+
+	// 每个产品一条路径，把所属分类通过 props 传给页面
+  const goodsRequestList = list.map(item => {
+    return requestData("goods", {
+      id: item.id,
+      category_id: item.category_id,
+      data_type: "show",
+      sort: "sortAsc",
+    })
+  });
+  const goodsResultList = await Promise.all(goodsRequestList);
+  goodsResultList.map(item => {
+    return {
+      params: { id: String(item.id) },
+      props: {
+        cateId: item.category_id,
+        product: item,
+        prevNextData: item.up,
+        nextProduct: item.down,
+      },
+    }
+  })
+  console.log("🚀 ~ getStaticPaths ~ goodsResultList: ", goodsResultList);
+  return [
+    {
+      params: { id: '6a62d97b8717ec3ac0045495' },
+    }
+  ];
+}
+
+---

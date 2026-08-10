@@ -12,7 +12,7 @@ const currentPageName = usePageName ? pageName : (tabs[activeIndex]?.title ?? pr
 				{
 					tabs.map((item, index) => (
 						<div class:list={['cate-item', 'f-h', 'flex', 'align-center', {'active': index === activeIndex}]} data-index={index} data-name={name}>
-							<a href={item.url ? '.' + item.url : 'javascript:void(0);'} :style={`pointer-events: ${item.url ? 'auto' : 'none'}`}>{item.title}</a>
+							<a href={item.url ? item.url : 'javascript:void(0);'} :style={`pointer-events: ${item.url ? 'auto' : 'none'}`}>{item.title}</a>
 						</div>
 					))
 				}
@@ -26,6 +26,7 @@ const currentPageName = usePageName ? pageName : (tabs[activeIndex]?.title ?? pr
 		const normalizedPath = decodeURIComponent(path)
 			.replace(/\\/g, '/')
 			.replace(/^\/[A-Za-z]:/, '')
+			.replace(/\.html$/, '')
 			.replace(/\/+$/, '');
 		return normalizedPath || '/';
 	}
@@ -37,7 +38,6 @@ const currentPageName = usePageName ? pageName : (tabs[activeIndex]?.title ?? pr
 		document.getElementById(targetId)?.scrollIntoView({behavior: 'auto', block: 'start'});
 	}
 
-	let activeIndex = 0;
 	function updateActiveIndex ()  {
 		if(!tabs.length){
 			activeIndex = -1;
@@ -49,6 +49,8 @@ const currentPageName = usePageName ? pageName : (tabs[activeIndex]?.title ?? pr
 		const currentHash = currentUrl.hash;
 		const isSamePath = (tabPath) => currentPath === tabPath || currentPath.endsWith(tabPath);
 
+		console.log('[BC] URL:', window.location.href, 'Path:', currentPath, 'Hash:', currentHash);
+
 		// tabs 是异步加载的，数据到达后再执行匹配；如果配置了 query，优先按 query 值匹配 tab。
 		const queryValue = activeQuery ? currentUrl.searchParams.get(activeQuery) : null;
 		let index = queryValue
@@ -57,24 +59,34 @@ const currentPageName = usePageName ? pageName : (tabs[activeIndex]?.title ?? pr
 
 		// 没有匹配到 query 时，继续按完整的 pathname + hash 匹配，兼容原有页面。
 		if(index === -1){
-			index = tabs.findIndex(item => {
+			index = tabs.findIndex((item, i) => {
 				if(!item?.url) return false;
 				const tabUrl = new URL(item.url, window.location.href);
-				return isSamePath(normalizePath(tabUrl.pathname)) && tabUrl.hash === currentHash;
+				const tabPath = normalizePath(tabUrl.pathname);
+				const pathMatch = isSamePath(tabPath);
+				const hashMatch = tabUrl.hash === currentHash;
+				const isSame = pathMatch && hashMatch;
+				console.log(`[BC] Tab ${i} (${item.title}): url=${item.url}, path=${tabPath}, pathMatch=${pathMatch}, hashMatch=${hashMatch}, result=${isSame}`);
+				return isSame;
 			});
 		}
 
 		// 页面没有 hash 时，按 pathname 匹配当前页面，并选中该页面的第一个分类。
 		if(index === -1 && !currentHash){
-			index = tabs.findIndex(item => {
+			console.log('[BC] No hash, matching by pathname');
+			index = tabs.findIndex((item, i) => {
 				if(!item?.url) return false;
 				const tabUrl = new URL(item.url, window.location.href);
-				return isSamePath(normalizePath(tabUrl.pathname));
+				const tabPath = normalizePath(tabUrl.pathname);
+				const isSame = isSamePath(tabPath);
+				console.log(`[BC] Tab ${i} pathname: ${tabPath} == ${currentPath}? ${isSame}`);
+				return isSame;
 			});
 		}
 
 		// 同页面但 hash 不在 tabs 中时，至少保持第一个分类处于激活状态。
 		activeIndex = index === -1 ? 0 : index;
+		console.log('[BC] Setting active index to:', activeIndex, 'Tab:', tabs[activeIndex]?.title);
 		$(`.cate-item[data-index="${activeIndex}"]`).addClass('active').trigger('click').siblings().removeClass('active');
 	}
 	function updateByTabs () {

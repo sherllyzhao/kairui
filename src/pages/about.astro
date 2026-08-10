@@ -62,7 +62,6 @@ const advantageList = advantageListRes?.data ?? [];
 		})()
 
 		window.addEventListener('tab-change', (e) => {
-		    console.log("🚀 ~  ~ e: ", e);
 			if(e.detail.name === 'about-tabs'){
 				setAdvantageActiveIndex(e.detail.activeIndex);
 			}

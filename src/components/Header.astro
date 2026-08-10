@@ -81,7 +81,7 @@ const lastPath = pathnameArr[pathnameArr.length - 1];
                     navList.length && navList.map((item: any) => {
                       return <li class:list={['relative f-h flex align-center', {active: lastPath ? '/' + lastPath === item.link : item.link === '/index.html'}]}>
 						  {
-							  (item.useCateAndPage && item.children[0]) ? <a href={`${item.link.replace(/\.html$/, '')}/${item.children[0].id}/1`}>{item.title}</a> : <a href={`${item.link}`}>{item.title}</a>
+							  (item.useCateAndPage && item.children[0]) ? <a href={`${item.link.replace(/\.html$/, '')}/${item.children[0].id}/1.html`}>{item.title}</a> : <a href={`${item.link}`}>{item.title}</a>
 						  }
 							{item.children && item.children.length > 0 && (
 									<div class="second-nav">
@@ -89,7 +89,7 @@ const lastPath = pathnameArr[pathnameArr.length - 1];
 										  {item.children.map((child: any) => (
 											  <li>
 												{child.url ? <a href={`${child.url}`}>{child.title}</a> :
-														<a href={`${item.link.replace(/\.html$/, '')}/${child.id}/1`}>{child.title}</a>}
+														<a href={`${item.link.replace(/\.html$/, '')}/${child.id}/1.html`}>{child.title}</a>}
 											  </li>
 										  ))}
 										</ul>
