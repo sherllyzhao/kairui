@@ -3,10 +3,13 @@ import Layout from "../../../layouts/Layout.astro";
 import Banner from "../../../components/Banner.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import { requestData } from "../../../assets/js/jzt_common";
+import Pagination from "../../../components/Pagination.astro";
+
+const pageSizeTotal = 10;
 
 export async function getStaticPaths() {
-	const rootCategoryId = "6a605df319df9b3e2e2b4af2";
 	const pageSize = 10;
+	const rootCategoryId = "6a605df319df9b3e2e2b4af2";
 
 	const toList = (result) =>
 		Array.isArray(result) ? result : result?.data ?? [];
@@ -63,7 +66,7 @@ const goodsResult = await requestData("goods", {
 	sort: "sortAsc",
 	category_id: categoryId,
 	page: currentPage,
-	limit: 10,
+	limit: pageSizeTotal,
 });
 
 const productList = goodsResult?.data ?? [];
@@ -85,6 +88,7 @@ const currentCateId = cateList[categoryIndex].id;
 <Layout>
 	<link rel="stylesheet" href="/css/breadcrumbs.css">
 	<link rel="stylesheet" href="/css/product.css" />
+	<link rel="stylesheet" href="/css/pagination.css" />
 
 	<Banner id="6a5d9b8c64fdfb541468e9c2" />
 	<Breadcrumbs pageName="产品展示" tabs={cateList} usePageName={true} />
@@ -92,20 +96,19 @@ const currentCateId = cateList[categoryIndex].id;
 		<div class="page-container">
 			<div class="product-list">
 				{
-					productList.map((item, index) => (
+					productList.length > 0 ? productList.map((item, index) => (
 						<a href={`/productDetails.html?id=${item.id}&cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
-							<!--<div class="product-img">
-								<img :src="item.bg_img" alt="">
+							<div class="product-img">
+								<img src={item.bg_img} alt="">
 							</div>
 							<div class="product-desc">
-								<div class="product-name hide-more-text" style="&#45;&#45;lines: 1">{{item.title}}</div>
-							</div>-->
+								<div class="product-name hide-more-text" style="--lines: 1">{item.title}</div>
+							</div>
 						</a>
-					))
+					)) : <div class="product-empty">暂无产品</div>
 				}
 			</div>
-			<!--<div v-if="!productList.length" class="product-empty">暂无产品</div>-->
-			<!--<pagination-app v-model="currentPage" :total="total" :page-size="pageSize" @change="getProductList"></pagination-app>-->
+			<Pagination total={total} pageSize={pageSizeTotal} currentPage={1} />
 		</div>
 	</div>
 

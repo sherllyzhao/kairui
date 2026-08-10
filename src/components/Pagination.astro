@@ -1,0 +1,40 @@
+---
+const {total = 0, pageSize = 10, currentPage = 1} = Astro.props;
+
+const totalPages = total > 0 ? Math.max(1, Math.ceil(total / Math.max(1, pageSize))) : 0;
+
+const visiblePages = () => {
+	const lastPage = totalPages;
+	if (lastPage <= 7) {
+		return Array.from({length: lastPage}, (_, index) => index + 1);
+	}
+	if (currentPage <= 4) {
+		return [1, 2, 3, 4, 5, 'ellipsis', lastPage];
+	}
+	if (currentPage >= lastPage - 3) {
+		return [1, 'ellipsis', lastPage - 4, lastPage - 3, lastPage - 2, lastPage - 1, lastPage];
+	}
+	return [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', lastPage];
+};
+---
+
+{
+	totalPages > 1 && <nav class="pagination flex align-center justify-center" aria-label="分页导航">
+		<button class="pagination-button pagination-prev flex align-center justify-center" type="button"
+				disabled={currentPage <= 1} aria-label="上一页">
+			<span aria-hidden="true">上一页</span>
+		</button>
+		{
+			visiblePages().map((page, index) => {
+				return page === 'ellipsis' ? <span class="pagination-ellipsis" aria-hidden="true">...</span> :
+					<button class:list={['pagination-button flex align-center justify-center', {active: page === currentPage}]} type="button" aria-current={page === currentPage ? 'page' : undefined} aria-label={'第 ' + page + ' 页'}>
+						{page}
+					</button>
+			})
+		}
+		<button class="pagination-button pagination-next flex align-center justify-center" type="button"
+				disabled={currentPage >= totalPages} aria-label="下一页">
+			<span aria-hidden="true">下一页</span>
+		</button>
+	</nav>
+}
