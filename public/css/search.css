@@ -121,7 +121,10 @@
       text-align: center; }
     .search-result-wrap .search-result-dialog .dialog-body .product-empty {
       min-height: 260px;
-      color: #878787; }
+      color: #878787;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
 
 @keyframes searchFadeIn {
   from {

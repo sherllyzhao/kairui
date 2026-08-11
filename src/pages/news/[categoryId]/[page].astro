@@ -1,60 +1,61 @@
 ---
+import type { GetStaticPaths } from "astro";
 import Layout from "../../../layouts/Layout.astro";
 import Banner from "../../../components/Banner.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import { requestData, timeStamp2String } from "../../../assets/js/jzt_common.ts";
 import Pagination from "../../../components/Pagination.astro";
 
-export async function getStaticPaths({ paginate }) {
+const rootCategoryId = "6a65771ba6ba0c2e856b11c8";
+
+// 用 satisfies 而非 `: GetStaticPaths` 注解：satisfies 保留 paginate() 推断出的
+// 具体 params/props 形状，Astro.params / Astro.props 才能自动收窄；
+// 类型注解会把返回值擦成 GetStaticPathsResult，page 退化为 any。
+//
+// 注意：getStaticPaths 会被 Astro 提取到独立作用域执行，读不到 frontmatter 的
+// 其它变量（import 除外），所以 pageSize / rootCategoryId 必须在函数内自带一份。
+export const getStaticPaths = (async ({ paginate }) => {
 	const pageSize = 10;
 	const rootCategoryId = "6a65771ba6ba0c2e856b11c8";
 
-	const toList = (result: any) =>
-		Array.isArray(result) ? result : result?.data ?? [];
-
-	const categoryResult = await requestData("category", {
+	const categories = await requestData("category", {
 		sort: "sortAsc",
 		category_id: rootCategoryId,
 		data_type: "list",
 		limit: -1,
 	});
 
-	const categories = toList(categoryResult);
 	const paths = [];
 
 	for (const category of categories) {
-		const goodsResult = await requestData("content", {
+		// data_type: 'list' 经 FilterResult 条件类型收窄为 DataItem[]，无需数组兜底
+		const news = await requestData("content", {
 			sort: "sortAsc",
 			category_id: category.id,
 			data_type: "list",
 			limit: -1,
 		});
 
-		const goods = toList(goodsResult);
-		const paginated = paginate(goods, {
+		paths.push(...paginate(news, {
 			params: { categoryId: String(category.id) },
 			pageSize,
-		});
-		paths.push(...paginated);
+		}));
 	}
 
 	return paths;
-}
+}) satisfies GetStaticPaths;
 
 const pageSize = 10;
 const { categoryId } = Astro.params;
 const { page } = Astro.props;
 const newsList = page.data;
 
-const cateResult = await requestData("category", {
+const cateList = await requestData("category", {
 	sort: "sortAsc",
-	category_id: "6a65771ba6ba0c2e856b11c8",
+	category_id: rootCategoryId,
 	data_type: "list",
 	limit: -1,
 });
-
-// data_type: 'list' 恒返回数组，无需再做 Array.isArray 兜底
-const cateList = cateResult;
 
 const categoryIndex = cateList.findIndex(item => String(item.id) === categoryId);
 const currentCateId = categoryIndex !== -1 ? cateList[categoryIndex].id : cateList[0]?.id;
@@ -64,8 +65,9 @@ const cateListWithUrl = cateList.map(item => ({
 	url: `/news/${item.id}/1.html`
 }));
 
-const getTime = (time: number | string) => {
-	return timeStamp2String(time, 'Y-m-d')
+// create_time 在 DataItem 中是可选字段，缺失时不渲染日期
+const getTime = (time: number | string | undefined) => {
+	return time === undefined ? '' : timeStamp2String(time, 'Y-m-d')
 }
 ---
 
@@ -81,7 +83,7 @@ const getTime = (time: number | string) => {
 			{
 				newsList.length ? <div class="news-list">
 					{
-						newsList.map((item: any, index: number) => <a href={`/newsDetails/${item.id}.html?cateId=${currentCateId}`} class="news-item flex flex-column align-center reveal-on-scroll" style={{ '--reveal-delay': (index % 5) * 70 + 'ms' }} data-index={index}>
+						newsList.map((item, index) => <a href={`/newsDetails/${item.id}.html?cateId=${currentCateId}`} class="news-item flex flex-column align-center reveal-on-scroll" style={{ '--reveal-delay': (index % 5) * 70 + 'ms' }} data-index={index}>
 							<div class="news-img">
 								<img src={item.bg_img} alt="">
 							</div>

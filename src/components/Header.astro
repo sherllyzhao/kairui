@@ -15,7 +15,7 @@ try {
   mobileLogo = site.phone_logo;
 
   const res = await requestData('nav', {sort: 'sortAsc'});
-  navList = res.data || res;
+  navList = res.data.filter(item => item.show) || res.filter(item => item.show);
 
   // 三个分类请求相互独立，并行获取
   const [about

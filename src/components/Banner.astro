@@ -38,19 +38,19 @@ try {
 		</div>
 	</div>
 	<div class="swiper-button-next">
-		<img src="./img/right-arraw.png" alt="">
+		<img src="/img/right-arraw.png" alt="">
 	</div>
 	<div class="swiper-button-prev">
-		<img src="./img/left-arraw.png" alt="">
+		<img src="/img/left-arraw.png" alt="">
 	</div>
 	<div class="swiper-pagination"></div>
 </div> :
 <div class="banner-image" style={{backgroundImage: `url(${bannerImg})`}}>
 	{
 		Astro.slots.has('default') ? <slot name="default"></slot> : <div class="banner-image-content flex align-center justify-center flex-column f-h">
-		<h2>{navInfo.title}</h2>
-		<h4>{navInfo.enTitle}</h4>
-	</div>
+			<h2>{navInfo.title}</h2>
+			<h4>{navInfo.enTitle}</h4>
+		</div>
 	}
 </div>}
 

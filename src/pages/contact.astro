@@ -10,8 +10,10 @@ import icon2 from "../assets/img/icon2.png";
 import icon3 from "../assets/img/icon3.png";
 
 let contactList = [];
+let siteId = '';
 try{
 	const contactRes = await requestData('site');
+	siteId = contactRes.site_id;
 	contactList = [
 		{title: '公司地址', content: contactRes.company_address, icon: icon1},
 		{title: '中国区负责人', content: contactRes.company_phone, icon: icon2},
@@ -71,4 +73,35 @@ try{
 			</div>
 		</div>
 	</div>
+
+	<script define:vars={{siteId}}>
+		const form = document.querySelector('.contact-form');
+		console.log("🚀 ~  ~ form: ", form);
+		const submitBtn = document.querySelector('.contact-form button');
+		console.log("🚀 ~  ~ submitBtn: ", submitBtn);
+		submitBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			const name = form.querySelector('#name').value;
+			const phone = form.querySelector('#phone').value;
+			const content = form.querySelector('#content').value;
+			console.log(name, phone, content);
+			const postData = {
+				'姓名': name,
+				'联系电话': phone,
+				'留言内容': content,
+			};
+			$.post("http://jzt2.china9.cn/api/message/addMsg", {
+				site_id: siteId,
+				column_id: '6a631c3887d62616d4201fec',
+				content: postData
+			}, function(res) {
+				if (res.code === 200) {
+					alert("留言提交成功");
+				} else {
+					// 失败
+					console.log(res.msg);
+				}
+			})
+		});
+	</script>
 </Layout>
