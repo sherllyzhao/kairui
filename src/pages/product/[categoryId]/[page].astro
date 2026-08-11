@@ -2,7 +2,7 @@
 import Layout from "../../../layouts/Layout.astro";
 import Banner from "../../../components/Banner.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
-import { requestData } from "../../../assets/js/jzt_common";
+import { requestData } from "../../../assets/js/jzt_common.ts";
 import Pagination from "../../../components/Pagination.astro";
 
 export async function getStaticPaths({ paginate }) {
@@ -53,9 +53,8 @@ const cateResult = await requestData("category", {
 	limit: -1,
 });
 
-const cateList = Array.isArray(cateResult)
-	? cateResult
-	: cateResult?.data ?? [];
+// data_type: 'list' 恒返回数组，无需再做 Array.isArray 兜底
+const cateList = cateResult;
 
 const categoryIndex = cateList.findIndex(item => String(item.id) === categoryId);
 const currentCateId = categoryIndex !== -1 ? cateList[categoryIndex].id : cateList[0]?.id;
@@ -78,7 +77,7 @@ const cateListWithUrl = cateList.map(item => ({
 		<div class="page-container">
 			<div class="product-list">
 				{
-					productList.length > 0 ? productList.map((item, index) => (
+					productList.length > 0 ? productList.map((item: any, index: number) => (
 						<a href={`/productDetails/${item.id}.html?cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
 							<div class="product-img">
 								<img src={item.bg_img} alt="">

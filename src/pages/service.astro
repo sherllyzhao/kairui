@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Banner from "../components/Banner.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import {requestData} from "../assets/js/jzt_common"
+import Detail from "../components/Detail.astro";
+
+const cateId = '6a6578567ba49e10fb3e5892';
+let newsInfo = {};
+try{
+  const serviceRes = await requestData('content', {data_type: 'show', sort: 'sortAsc', category_id: cateId});
+  const newsId = serviceRes?.info?.id;
+  newsInfo = await requestData(`content/${newsId}`) ?? {};
+}catch (e) {
+    console.log("🚀 ~  ~ e: ", e);
+}
+---
+
+<Layout>
+	<link rel="stylesheet" href="/css/breadcrumbs.css">
+	<link rel="stylesheet" href="/css/detail.css">
+
+    <Banner id="6a5d9bbdb7b9c0004828fff7" />
+    <Breadcrumbs pageName="售后服务" usePageName={true} />
+    <Detail detailInfo={newsInfo} showTime={true} showCover={false} showLabel={false} />
+</Layout>

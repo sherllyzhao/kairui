@@ -1,11 +1,10 @@
 ---
-import {timeStamp2String} from "../assets/js/jzt_common";
-const {detailInfo = {}, prevAndNext = {}, listHref = '', categoryId = '', detailLabel = '详情', emptyText = '暂无内容', listText = '返回列表', showTime = true, showLabel = true, showCover = true} = Astro.props;
+const {detailInfo = {}, prevAndNext = {}, detailPage= '', listHref = '', categoryId = '', detailLabel = '详情', emptyText = '暂无内容', listText = '返回列表', showTime = true, showLabel = true, showCover = true} = Astro.props;
 
 const hasDetail = detailInfo && detailInfo.id
 
 const buildDetailUrl = (detail: any) => {
-  return `/productDetails/${detail.id}.html?cateId=${categoryId}`;
+  return `/${detailPage}/${detail.id}.html?cateId=${categoryId}`;
 }
 ---
 

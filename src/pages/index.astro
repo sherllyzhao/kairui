@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Banner from "../components/Banner.astro";
 import HomeTitle from "../components/HomeTitle.astro";
 import MoreBtn from "../components/MoreBtn.astro";
-import {requestData, timeStamp2String} from "../assets/js/jzt_common";
+import {requestData, timeStamp2String} from "../assets/js/jzt_common.ts";
 import Tabs from "../components/Tabs.astro";
 
 const [productRes, brandRes, caseRes, case2Res, articleTabsRes] = await Promise.all([
@@ -25,10 +25,10 @@ const brandTabs = brandRes?.data?.filter(item => item.showInHome);
 const caseList = caseRes?.data;
 const case2List = case2Res?.data;
 const articleTabs = articleTabsRes?.data;
-let articleList = {};
+let articleList: Record<string, any> = {};
 try {
   if (articleTabs.length > 0) {
-    const requestList = [];
+    const requestList: any[] = [];
     articleTabs.forEach((item) => {
       requestList.push(requestData('content', {sort: 'sortAsc', category_id: item.id, page: 1, limit: 4}));
     })
@@ -40,7 +40,7 @@ try {
 } catch (e) {
   console.error(e, '获取文章列表失败');
 }
-const getTime = (time) => {
+const getTime = (time: number | string) => {
   return timeStamp2String(time, 'Y-m-d')
 }
 ---
@@ -58,10 +58,10 @@ const getTime = (time) => {
 					<p class="description">专注高端工业轴承的研发、生产与应用配套</p>
 					<div class="swiper-btn flex justify-between align-center">
 						<div class="swiper-button-prev">
-							<img src="./img/arrow2.png" alt="">
+							<img src="/img/arrow2.png" alt="">
 						</div>
 						<div class="swiper-button-next">
-							<img src="./img/arrow2.png" alt="">
+							<img src="/img/arrow2.png" alt="">
 						</div>
 					</div>
 					{
@@ -110,7 +110,7 @@ const getTime = (time) => {
 				<div class="product-mobile__list">
                   {
                     productList.map(item => (
-							<a class="product-mobile__card" href="./product.html">
+							<a class="product-mobile__card" href={`/product/${productList?.[0]?.id}/1.html`}>
                               {item.image_intro && <img src={item.image_intro} alt={item.title}>}
 								<div>
 									<h3>{item.title}</h3>
@@ -138,17 +138,17 @@ const getTime = (time) => {
 									<HomeTitle title={item.title} subtitle={item.enTitle} color="white"></HomeTitle>
 									<div class="content hide-more-text" style="--lines: 5;"
 									     set:text={item.content}></div>
-									<MoreBtn href="./about.html"/>
+									<MoreBtn href="/about.html"/>
 								</div>
                         ))
                       }
 					</div>
 					<div class="swiper-btn absolute flex justify-between align-center">
 						<div class="swiper-button-prev">
-							<img src="./img/arrow2.png" alt="">
+							<img src="/img/arrow2.png" alt="">
 						</div>
 						<div class="swiper-button-next">
-							<img src="./img/arrow2.png" alt="">
+							<img src="/img/arrow2.png" alt="">
 						</div>
 					</div>
 				</div>
@@ -170,7 +170,7 @@ const getTime = (time) => {
 						<div class="brand-mobile__content" data-index-number={index}>
 							<h3>{item.title}</h3>
 							<p class="hide-more-text" style="--lines: 5;">{item.content}</p>
-							<a class="mobile-text-link mobile-text-link--light" href="./about.html">了解凯瑞 <span
+							<a class="mobile-text-link mobile-text-link--light" href="/about.html">了解凯瑞 <span
 									aria-hidden="true">→</span></a>
 						</div>
                 ))
@@ -193,7 +193,7 @@ const getTime = (time) => {
                         ))
                       }
 					</div>
-					<MoreBtn href="./case.html?pageId=6a66c24ce39ec507d8232004"/>
+					<MoreBtn href="/case.html?pageId=6a66c24ce39ec507d8232004"/>
 				</div>
 				<div class="right-box relative">
 					<div class="right">
@@ -217,10 +217,10 @@ const getTime = (time) => {
 								<p class="cate-desc hide-more-text" style="--lines: 2;">{item.intro}</p>
 								<div class="swiper-btn absolute">
 									<div class="swiper-button-prev">
-										<img src="./img/left-arraw.png" alt="">
+										<img src="/img/left-arraw.png" alt="">
 									</div>
 									<div class="swiper-button-next">
-										<img src="./img/left-arraw.png" alt="">
+										<img src="/img/left-arraw.png" alt="">
 									</div>
 								</div>
 							</div>
@@ -254,7 +254,7 @@ const getTime = (time) => {
                 ))
               }
 
-				<a class="mobile-text-link" href="./case.html?pageId=6a66c24ce39ec507d8232004">查看全部案例 <span
+				<a class="mobile-text-link" href="/case.html?pageId=6a66c24ce39ec507d8232004">查看全部案例 <span
 						aria-hidden="true">→</span></a>
 			</div>
 		</div>
@@ -270,7 +270,7 @@ const getTime = (time) => {
 								<h5 class="cate-name">{item.title}</h5>
 								<p class="cate-desc hide-more-text" style="--lines: 2;">{item.intro}</p>
 								<div class="arrow absolute">
-									<img src="./img/arrow2.png" alt="">
+									<img src="/img/arrow2.png" alt="">
 								</div>
 							</div>
                     ))
@@ -285,7 +285,7 @@ const getTime = (time) => {
 				<div class="solution-mobile__list">
                   {
                     case2List.map(item => (
-							<a href="./case.html?pageId=6a66c2943b7c8a0bdb25a5f3" class="solution-mobile__card">
+							<a href="/case.html?pageId=6a66c2943b7c8a0bdb25a5f3" class="solution-mobile__card">
 								<h3>{item.title}</h3>
 								<p class="hide-more-text" style="--lines: 2;">{item.intro}</p>
 								<span aria-hidden="true">→</span>
@@ -308,27 +308,27 @@ const getTime = (time) => {
 						<div class="bottom" id={`news-swiper-${item.id}`} data-index-number={index}>
 							<div class="swiper-wrapper">
                               {
-                                articleList[item.id] && articleList[item.id].map(item2 => (
-											  <div class="swiper-slide interactive-card">
-												  <div class="info">
-													  <time class="date">{getTime(item2.create_time)}</time>
-													  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
-													  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
-													  <div class="arrow">
-														  <img src="./img/right-arraw.png" alt="" class="arrow">
-													  </div>
-												  </div>
-                                                {item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
-											  </div>
+                                articleList[item.id] && articleList[item.id].map((item2: any) => (
+								  <div class="swiper-slide interactive-card">
+									  <div class="info">
+										  <time class="date">{getTime(item2.create_time)}</time>
+										  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
+										  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
+										  <div class="arrow">
+											  <img src="/img/right-arraw.png" alt="" class="arrow">
+										  </div>
+									  </div>
+									{item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
+								  </div>
                                 ))
                               }
 							</div>
 							<div class="swiper-btn absolute flex justify-between align-center">
 								<div class="swiper-button-prev">
-									<img src="./img/arrow2.png" alt="">
+									<img src="/img/arrow2.png" alt="">
 								</div>
 								<div class="swiper-button-next">
-									<img src="./img/arrow2.png" alt="">
+									<img src="/img/arrow2.png" alt="">
 								</div>
 							</div>
 						</div>
@@ -349,28 +349,28 @@ const getTime = (time) => {
 				</div>
               {
                 articleTabs.map((item, index) => (
-						<div class="news-mobile__list" data-index-number={index}>
-                          {
-                            articleList[item.id] && articleList[item.id].map(item2 => (
-										  <a class="news-mobile__card"
-										     href={`./newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
-                                            {
-                                              item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
-                                            }
-											  <div class="news-mobile__card-content">
-												  <time>{getTime(item2.create_time)}</time>
-												  <h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
-												  <p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
-												  <span aria-hidden="true">→</span>
-											  </div>
-										  </a>
-                            ))
-                          }
-						</div>
+					<div class="news-mobile__list" data-index-number={index}>
+					  {
+						articleList[item.id] && articleList[item.id].map((item2: any) => (
+						  <a class="news-mobile__card"
+							 href={`/newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
+							{
+							  item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
+							}
+							  <div class="news-mobile__card-content">
+								  <time>{getTime(item2.create_time)}</time>
+								  <h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
+								  <p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
+								  <span aria-hidden="true">→</span>
+							  </div>
+						  </a>
+						))
+					  }
+					</div>
                 ))
               }
 
-				<a class="news-mobile__more" href="./news.html">查看全部新闻 <span aria-hidden="true">→</span></a>
+				<a class="news-mobile__more" href={`/news/${articleTabs?.[0]?.id}/1`}>查看全部新闻 <span aria-hidden="true">→</span></a>
 			</div>
 		</div>
 	</div>

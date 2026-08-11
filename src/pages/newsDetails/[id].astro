@@ -1,24 +1,23 @@
 ---
-import {requestData} from "../../assets/js/jzt_common";
+import {requestData} from "../../assets/js/jzt_common.ts";
 import Banner from "../../components/Banner.astro";
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import Detail from "../../components/Detail.astro";
 
 export async function getStaticPaths() {
-  const goodsResult = await requestData("goods", {
+  const contentResult = await requestData("content", {
     sort: "sortAsc",
     data_type: "list",
     limit: -1,
   });
 
-  const list = Array.isArray(goodsResult)
-    ? goodsResult
-    : goodsResult?.data ?? [];
+  // data_type: 'list' 恒返回数组，无需再做 Array.isArray 兜底
+  const list = contentResult;
 
   // 每个产品一条路径，把所属分类通过 props 传给页面
-  const goodsRequestList = list.map((item: any) => {
-    return requestData("goods", {
+  const contentRequestList = list.map((item: any) => {
+    return requestData("content", {
       id: item.id,
       category_id: item.category_id,
       data_type: "show",
@@ -27,7 +26,7 @@ export async function getStaticPaths() {
   });
 
   const infoRequestList = list.map((item: any) => {
-	  return requestData("goods/" + item.id)
+	  return requestData("content/" + item.id)
   });
   const infoResultList = await Promise.all(infoRequestList);
   const infoResultMap: Record<string, any> = {};
@@ -37,8 +36,8 @@ export async function getStaticPaths() {
 	  })
   }
 
-  const goodsResultList = await Promise.all(goodsRequestList);
-  return goodsResultList.map(item => {
+  const contentResultList = await Promise.all(contentRequestList);
+  return contentResultList.map(item => {
     return {
       params: {id: String(item.info.id)},
       props: {
@@ -53,14 +52,14 @@ export async function getStaticPaths() {
 
 const {cateId, product, prevNextData, nextProduct} = Astro.props;
 const {id} = Astro.params;
-const listPage = `/product/${cateId}/1.html`;
+const listPage = `/news/${cateId}/1.html`;
 ---
 
 <Layout>
 	<link rel="stylesheet" href="/css/breadcrumbs.css">
 
-	<Banner id="6a5d9b8c64fdfb541468e9c2"/>
-    <Breadcrumbs pageName="产品展示" usePageName={true} />
+	<Banner id="6a5d9ba1233ff835982878ea"/>
+    <Breadcrumbs pageName="新闻动态" usePageName={true} />
 
-	<Detail detailInfo={product} prevAndNext={{up: prevNextData, down: nextProduct}} listHref={listPage} categoryId={cateId} detailLabel="产品详情" empty-text="暂无产品" />
+	<Detail detailInfo={product} prevAndNext={{up: prevNextData, down: nextProduct}} detailPage="newsDetails" listHref={listPage} categoryId={cateId} detailLabel="产品详情" empty-text="暂无产品" />
 </Layout>
