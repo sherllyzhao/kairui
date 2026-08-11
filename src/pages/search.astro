@@ -82,7 +82,7 @@ import Pagination from "../components/Pagination.astro";
 					})
 
 					const pagination = `					
-						<nav class="pagination flex align-center justify-center" aria-label="分页导航">
+						<nav class="pagination flex align-center justify-center" data-name="search" aria-label="分页导航">
 							<button class="pagination-button pagination-prev flex align-center justify-center" type="button" disabled=${(currentPage <= 1)} aria-label="上一页" to=${(currentPage - 1)}>
 								<span aria-hidden="true" style="pointer-events: none">上一页</span>
 							</button>
@@ -99,6 +99,13 @@ import Pagination from "../components/Pagination.astro";
 						</div>
 						${totalPages >1 ? pagination : ''}
 					`)
+
+					$(`.pagination[data-name="search"] .pagination-button`).on('click', function (e) {
+						const page = parseInt($(this).attr('to'));
+						const nextPage = Math.min(Math.max(1, page), totalPages);
+						if (nextPage === currentPage) return;
+						window.location.href = `/search?q=${q}&page=${nextPage}`;
+					})
 				})
 			}
 
