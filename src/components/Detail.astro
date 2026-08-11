@@ -1,0 +1,54 @@
+---
+import {timeStamp2String} from "../assets/js/jzt_common";
+const {detailInfo = {}, prevAndNext = {}, listHref = '', categoryId = '', detailLabel = '详情', emptyText = '暂无内容', listText = '返回列表', showTime = true, showLabel = true, showCover = true} = Astro.props;
+console.log("🚀 ~  ~ prevAndNext: ", detailInfo.create_time);
+
+const hasDetail = detailInfo && detailInfo.id
+
+const buildDetailUrl = (detail: any) => {
+  return `/productDetails/${detail.id}.html?cateId=${categoryId}`;
+}
+---
+
+<link rel="stylesheet" href="/css/detail.css">
+<div class="detail-page-container reveal-on-scroll">
+	<div class="page-container">
+      {
+          hasDetail ? <div>
+              <h4>{detailInfo.title}</h4>
+              {showTime && detailInfo.create_time && <time class="detail-time">{detailInfo.create_time}</time>}
+              <hr>
+              {
+                detailInfo.bg_img && showCover && <div class="cover-img flex justify-center">
+                  <img src={detailInfo.bg_img} alt={detailInfo.title || ''}>
+                </div>
+              }
+              {
+                showLabel && <div class="detail-tips">{detailLabel}</div>
+              }
+              {
+                detailInfo.details && <div class="detail-content" set:html={detailInfo.details}></div>
+              }
+          </div> : <div class="detail-empty">{emptyText}</div>
+      }
+		<hr>
+      {
+        (prevAndNext.up || prevAndNext.down) && <div class="pre-next-container flex align-center justify-between">
+            <div class="left flex flex-column">
+              {
+                prevAndNext.up ? <a href={buildDetailUrl(prevAndNext.up)}>上一篇：{prevAndNext.up.title}</a> : <a class="disabled">上一篇：无</a>
+              }
+              {
+                prevAndNext.down ? <a href={buildDetailUrl(prevAndNext.down)}>下一篇：{prevAndNext.down.title}</a> : <a class="disabled">下一篇：无</a>
+              }
+            </div>
+            <div class="right">
+                <!--<a :href="listHref" class="to-detail-list justify-center align-center">
+                  {{listText}}
+                    <img src="./img/arrow3.png" alt="">
+                </a>-->
+            </div>
+        </div>
+      }
+	</div>
+</div>

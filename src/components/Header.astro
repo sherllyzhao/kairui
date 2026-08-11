@@ -30,7 +30,10 @@ try {
   if (aboutUs.length > 0) {
     const aboutUsItem = navList.find(item => item.id === navMap['关于我们']);
     if (aboutUsItem) {
-      aboutUsItem["children"] = aboutUs;
+      aboutUsItem["children"] = aboutUs.map(item => ({
+		  ...item,
+		  parentId: navMap['关于我们']
+	  }));
     }
   }
   // 产品
@@ -38,7 +41,10 @@ try {
   if (goods.length > 0) {
     const goodsItem = navList.find(item => item.id === navMap['产品展示']);
     if (goodsItem) {
-      goodsItem["children"] = goods;
+      goodsItem["children"] = goods.map(item => ({
+		  ...item,
+		  parentId: navMap['产品展示']
+	  }));
       goodsItem["useCateAndPage"] = true;
     }
   }
@@ -47,7 +53,10 @@ try {
   if (content.length > 0) {
     const contentItem = navList.find(item => item.id === navMap['新闻动态']);
     if (contentItem) {
-      contentItem["children"] = content;
+      contentItem["children"] = content.map(item => ({
+		  ...item,
+		  parentId: navMap['新闻动态']
+	  }))
       contentItem["useCateAndPage"] = true;
     }
   }
@@ -62,6 +71,15 @@ const toEn = isEn ? '/' : '/en';
 const pathnameStr = Astro.url.pathname;
 const pathnameArr = pathnameStr.split('/');
 const lastPath = pathnameArr[pathnameArr.length - 1];
+const secondPath = pathnameArr[pathnameArr.length - 2];
+
+function isActive(item: any) {
+	if (item.useCateAndPage) {
+		const selectedItem = item.children.find((child: any) => child.id === secondPath);
+		return selectedItem ? true : lastPath === item.id;
+	}
+	return lastPath ? '/' + lastPath === item.link : item.link === '/index.html';
+}
 ---
 <header>
 	<div class="header flex align-center justify-between">
@@ -79,7 +97,7 @@ const lastPath = pathnameArr[pathnameArr.length - 1];
 				<ul class="flex align-center justify-between first-nav f-h">
                   {
                     navList.length && navList.map((item: any) => {
-                      return <li class:list={['relative f-h flex align-center', {active: lastPath ? '/' + lastPath === item.link : item.link === '/index.html'}]}>
+                      return <li class:list={['relative f-h flex align-center', {active: isActive(item)}]}>
 						  {
 							  (item.useCateAndPage && item.children[0]) ? <a href={`${item.link.replace(/\.html$/, '')}/${item.children[0].id}/1.html`}>{item.title}</a> : <a href={`${item.link}`}>{item.title}</a>
 						  }

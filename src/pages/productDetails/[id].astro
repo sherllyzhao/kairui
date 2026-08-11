@@ -1,20 +1,23 @@
 ---
-import { requestData } from "../../assets/js/jzt_common";
+import {requestData} from "../../assets/js/jzt_common";
+import Banner from "../../components/Banner.astro";
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Detail from "../../components/Detail.astro";
 
 export async function getStaticPaths() {
-	const goodsResult = await requestData("goods", {
-		sort: "sortAsc",
-		data_type: "list",
-		limit: -1,
-	});
+  const goodsResult = await requestData("goods", {
+    sort: "sortAsc",
+    data_type: "list",
+    limit: -1,
+  });
 
-	const list = Array.isArray(goodsResult)
-		? goodsResult
-		: goodsResult?.data ?? [];
-		console.log("🚀 ~ getStaticPaths ~ list: ", list);
+  const list = Array.isArray(goodsResult)
+    ? goodsResult
+    : goodsResult?.data ?? [];
 
-	// 每个产品一条路径，把所属分类通过 props 传给页面
-  const goodsRequestList = list.map(item => {
+  // 每个产品一条路径，把所属分类通过 props 传给页面
+  const goodsRequestList = list.map((item: any) => {
     return requestData("goods", {
       id: item.id,
       category_id: item.category_id,
@@ -22,24 +25,42 @@ export async function getStaticPaths() {
       sort: "sortAsc",
     })
   });
+
+  const infoRequestList = list.map((item: any) => {
+	  return requestData("goods/" + item.id)
+  });
+  const infoResultList = await Promise.all(infoRequestList);
+  const infoResultMap: Record<string, any> = {};
+  if(infoResultList.length > 0){
+	  infoResultList.forEach(item => {
+		  infoResultMap[item.id] = item;
+	  })
+  }
+
   const goodsResultList = await Promise.all(goodsRequestList);
-  goodsResultList.map(item => {
+  return goodsResultList.map(item => {
     return {
-      params: { id: String(item.id) },
+      params: {id: String(item.info.id)},
       props: {
-        cateId: item.category_id,
-        product: item,
+        cateId: item.info.category_id,
+        product: infoResultMap[item.info.id],
         prevNextData: item.up,
         nextProduct: item.down,
       },
     }
-  })
-  console.log("🚀 ~ getStaticPaths ~ goodsResultList: ", goodsResultList);
-  return [
-    {
-      params: { id: '6a62d97b8717ec3ac0045495' },
-    }
-  ];
+  });
 }
 
+const {cateId, product, prevNextData, nextProduct} = Astro.props;
+const {id} = Astro.params;
+const listPage = `/product/${cateId}/1.html`;
 ---
+
+<Layout>
+	<link rel="stylesheet" href="/css/breadcrumbs.css">
+
+	<Banner id="6a5d9b8c64fdfb541468e9c2"/>
+    <Breadcrumbs pageName="产品展示" usePageName={true} />
+
+	<Detail detailInfo={product} prevAndNext={{up: prevNextData, down: nextProduct}} listHref={listPage} categoryId={cateId} detailLabel="产品详情" empty-text="暂无产品" />
+</Layout>
