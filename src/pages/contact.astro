@@ -1,0 +1,74 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Banner from "../components/Banner.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import HomeTitle from "../components/HomeTitle.astro";
+import { requestData } from "../assets/js/jzt_common.ts";
+import { Image } from 'astro:assets';
+import icon1 from "../assets/img/icon1.png";
+import icon2 from "../assets/img/icon2.png";
+import icon3 from "../assets/img/icon3.png";
+
+let contactList = [];
+try{
+	const contactRes = await requestData('site');
+	contactList = [
+		{title: '公司地址', content: contactRes.company_address, icon: icon1},
+		{title: '中国区负责人', content: contactRes.company_phone, icon: icon2},
+		{title: '电子邮箱', content: contactRes.company_email, icon: icon3},
+	];
+}catch (e){
+	console.error(e);
+}
+---
+
+<Layout>
+	<link rel="stylesheet" href="/css/breadcrumbs.css">
+	<link rel="stylesheet" href="/css/homeTitle.css">
+	<link rel="stylesheet" href="/css/contact.css">
+
+	<Banner id="6a5d9bcf37b9d21b7f584fa8"/>
+	<Breadcrumbs pageName="联系我们" usePageName={true} />
+
+	<div class="contact-wrap reveal-on-scroll">
+		<div class="page-container">
+			<HomeTitle title="联系我们" subtitle="contact us" />
+			<hr>
+			<ul class="contact-list flex flex-wrap justify-between">
+				{
+					contactList.map(item => (
+						<li class="contact-item flex align-center">
+							<Image class="icon" src={item.icon} alt="" />
+							<div class="info">
+								<div class="title">{item.title}</div>
+								<div class="content">{item.content}</div>
+							</div>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+	<div class="contact-form reveal-on-scroll">
+		<div class="page-container flex flex-column">
+			<HomeTitle title="在线留言" subtitle="online message" />
+			<div class="flex two-cols">
+				<div class="form-item">
+					<label for="name">姓名</label>
+					<input type="text" id="name" placeholder="请输入您的姓名">
+				</div>
+				<div class="form-item">
+					<label for="phone">联系电话</label>
+					<input type="tel" id="phone" placeholder="请输入您的联系电话">
+				</div>
+			</div>
+			<div class="form-item">
+				<label for="content">留言内容</label>
+				<textarea id="content" placeholder="请输入您的留言" v-mo></textarea>
+			</div>
+			<div class="form-item">
+				<button type="button">提交</button>
+			</div>
+		</div>
+	</div>
+</Layout>
