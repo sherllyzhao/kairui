@@ -32,6 +32,7 @@
       #advantages .advantage-content .advantage-item.active {
         display: block; }
 
+/* 关于页专属动画：使用 animation 代替 transition */
 @keyframes sectionReveal {
   from {
     opacity: 0.01;
@@ -39,6 +40,7 @@
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0); } }
+
 html.motion-ready .reveal-on-scroll.is-visible {
   animation: sectionReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both; }
 

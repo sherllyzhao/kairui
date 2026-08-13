@@ -88,10 +88,6 @@
         outline-offset: 3px; }
 
 /* 联系页轻量动画：区块进入视口时播放一次，内容默认保持可见 */
-.reveal-on-scroll {
-  opacity: 1;
-  transform: none; }
-
 html.motion-ready .reveal-on-scroll.is-visible {
   animation: contactSectionReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both; }
 

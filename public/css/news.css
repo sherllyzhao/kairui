@@ -48,10 +48,6 @@
     text-align: center; }
 
 /* 新闻卡片滚动入场动画，兼容异步加载和减少动态效果设置。 */
-.news-list-wrap .news-item {
-  opacity: 1;
-  transform: none; }
-
 html.motion-ready .news-list-wrap .news-item.is-visible {
   animation: newsCardReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--reveal-delay, 0ms); }

@@ -42,12 +42,6 @@
 }
 
 /* 产品页滚动入场动画：与 about 页保持一致，并兼容异步加载的产品卡片 */
-.product-list-wrap.reveal-on-scroll,
-.product-list-wrap .reveal-on-scroll {
-  opacity: 1;
-  transform: none;
-}
-
 html.motion-ready .product-list-wrap.reveal-on-scroll.is-visible,
 html.motion-ready .product-list-wrap .reveal-on-scroll.is-visible {
   animation: productSectionReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;

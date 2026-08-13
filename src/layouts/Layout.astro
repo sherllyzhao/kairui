@@ -4,6 +4,19 @@ import Banner from "../components/Banner.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
+interface Props {
+  /**
+   * 滚动动画模式。
+   * once（默认）：进场播一次即锁定，不再退场。
+   * toggle：进出视口反复播放 —— 仅适用于用 transition 实现动画的页面（如首页）。
+   *   用 animation 的页面切勿使用 toggle：类被摘掉时 animation 整个失效，
+   *   元素会瞬间复位造成闪烁，且位移会反馈影响可见性判定导致反复重播。
+   */
+  revealMode?: 'once' | 'toggle';
+}
+
+const {revealMode = 'once'} = Astro.props;
+
 let siteInfo = {
   title: '山西凯瑞工业发展有限公司',
   keywords: '山西凯瑞工业发展有限公司',
@@ -32,6 +45,8 @@ try {
 	<link rel="stylesheet" href="/css/header.css">
 	<link rel="stylesheet" href="/css/banner.css">
 	<link rel="stylesheet" href="/css/footer.css">
+	<!-- 必须在 body 渲染前打上 motion-ready，否则元素会先以可见状态绘制一帧再被隐藏，产生闪烁 -->
+	<script is:inline>document.documentElement.classList.add('motion-ready');</script>
 	<script is:inline src="/js/jquery-4.0.0.min.js"></script>
 </head>
 <body>
@@ -40,9 +55,9 @@ try {
 <Footer/>
 <script is:inline src="/js/common.js"></script>
 <script is:inline src="/js/scroll-reveal.js"></script>
-<script is:inline>
+<script is:inline define:vars={{revealMode}}>
   ScrollReveal.init({
-    mode: 'toggle',
+    mode: revealMode,
     selector: '.reveal-on-scroll',
     // 入/退场位移约 110px。离场加 140px 缓冲，避免页面顶部/底部反复抖动。
     visibility: {top: 0.88, bottom: 0.12},

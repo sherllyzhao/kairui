@@ -72,12 +72,17 @@ const cateListWithUrl = cateList.map(item => ({
 
 	<Banner id="6a5d9b8c64fdfb541468e9c2" />
 	<Breadcrumbs pageName="产品展示" tabs={cateListWithUrl} usePageName={true} name="product-breadcrumbs" />
-	<div class="product-list-wrap reveal-on-scroll">
+	{/* 外层容器刻意不加 reveal-on-scroll：入场位移只能有一层。
+	    若外层也播 42px 位移，会带着内部所有卡片一起移动，
+	    既造成 transform 双层叠加（84px），又会在动画的 750ms 内不断改变
+	    卡片的 getBoundingClientRect()，让 IntersectionObserver 错峰触发，
+	    表现为“闪好几下”。参照 news 列表，位移统一交给卡片自身。 */}
+	<div class="product-list-wrap">
 		<div class="page-container">
 			<div class="product-list">
 				{
 					productList.length > 0 ? productList.map((item, index) => (
-						<a href={`/productDetails/${item.id}.html?cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} :style="{ '--reveal-delay': (index % 5) * 70 + 'ms' }">
+						<a href={`/productDetails/${item.id}.html?cateId=${currentCateId}`} class="product-item flex flex-column align-center reveal-on-scroll" data-index={index} style={{ '--reveal-delay': (index % 5) * 70 + 'ms' }}>
 							<div class="product-img">
 								<img src={item.bg_img} alt="">
 							</div>

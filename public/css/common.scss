@@ -133,3 +133,43 @@ a {
 [v-cloak]{
   display: none;
 }
+
+/* ==================== 滚动动画防闪烁基础规则 ==================== */
+/* 渐进增强：无 JS 时元素可见（accessibility） */
+.reveal-on-scroll {
+  opacity: 1;
+  transform: none;
+}
+
+/* JS 就绪后隐藏元素等待入场。
+   transform 必须与各页 keyframes 的起始帧对齐（现全站统一 42px）。
+   若此处留 none，加 .is-visible 的瞬间 animation 接管会把元素瞬移到 42px，
+   造成肉眼可见的“跳一下”。首页在 index.css 里用自己的 110px 三段式覆盖本规则。 */
+html.motion-ready .reveal-on-scroll {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(0, 42px, 0);
+  transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.75s;
+  will-change: opacity, transform;
+}
+
+/* 进入视口：各页 CSS 可用 animation 覆盖位移轨迹；
+   未定义 animation 的页面（如 detail）则由这里的 transition 兜底归位 */
+html.motion-ready .reveal-on-scroll.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0s;
+}
+
+/* 尊重用户减少动画偏好设置 */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready .reveal-on-scroll,
+  html.motion-ready .reveal-on-scroll.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+}
