@@ -29,8 +29,10 @@
       .product-list-wrap .product-list img {
         height: auto;
         aspect-ratio: 1.3; } }
-/* 产品页滚动入场动画：与 about 页保持一致，并兼容异步加载的产品卡片 */
-html.motion-ready .product-list-wrap.reveal-on-scroll.is-visible,
+/* 产品页滚动入场动画：位移只作用于卡片本身。
+   外层 .product-list-wrap 不带 reveal-on-scroll —— 两层同时位移会导致
+   transform 叠加，且外层动画期间不断改变卡片的 boundingRect，
+   使 IntersectionObserver 错峰触发，观感为“闪好几下”。 */
 html.motion-ready .product-list-wrap .reveal-on-scroll.is-visible {
   animation: productSectionReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--reveal-delay, 0ms); }
@@ -57,7 +59,6 @@ html.motion-ready .product-list-wrap .reveal-on-scroll.is-visible {
   text-align: center; }
 
 @media (prefers-reduced-motion: reduce) {
-  html.motion-ready .product-list-wrap.reveal-on-scroll.is-visible,
   html.motion-ready .product-list-wrap .reveal-on-scroll.is-visible {
     animation: none; } }
 /* 平板：固定双列，但让卡片随容器缩放，避免原有最小宽度造成挤压 */

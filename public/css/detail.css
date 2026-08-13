@@ -3,10 +3,12 @@
   padding: clamp(100px, 6.40625vw, 170px) 0;
   /* 详情页的位移由内层 .page-container 独立负责（24px）。
      外层需显式归零，否则会叠加 common.css 里 .reveal-on-scroll 的 42px 基础位移，
-     导致内容整体下沉 66px 再弹回。 */ }
+     导致内容整体下沉 66px 再弹回。
+     必须带 html.motion-ready 前缀：common 的规则特异性是 (0,2,1)，
+     只写 &.reveal-on-scroll 是 (0,2,0) 会被压过去，加载顺序在后也没用。 */ }
   .detail-page-container .page-container {
     opacity: 1; }
-  .detail-page-container.reveal-on-scroll, .detail-page-container.reveal-on-scroll.is-visible {
+  html.motion-ready .detail-page-container.reveal-on-scroll, html.motion-ready .detail-page-container.reveal-on-scroll.is-visible {
     transform: none; }
   .detail-page-container.reveal-on-scroll .page-container {
     transition: opacity 0.7s ease, transform 0.7s ease; }
