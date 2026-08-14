@@ -210,6 +210,16 @@
           }
         }
       }
+
+      /* 竖向轮播：Swiper 接管布局后 gap 失效，改由容器高度 / 3 均分每条的行距 */
+      &.case-tab-swiper{
+        gap: 0;
+        height: calc(clamp(16px, 1.25vw, 30px) * 1.4 * 3 + clamp(60px, 4.323vw, 100px) * 2);
+        .swiper-slide{
+          display: flex;
+          align-items: center;
+        }
+      }
     }
     .more-btn{
       margin-top: clamp(100px, 8.073vw, 200px);

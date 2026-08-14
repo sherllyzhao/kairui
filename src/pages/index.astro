@@ -15,12 +15,37 @@ const [productRes, brandRes, caseRes, case2Res, articleTabsRes] = await Promise.
     category_id: '6a605df319df9b3e2e2b4af2'
   }),
   requestData('category', {type: 'text', sort: 'sortAsc', category_id: '6a603e041c54c90051403ac0'}),
-  requestData('goods', {sort: 'sortAsc', category_id: '6a606770c2f86d512a7f5bd0', page: 1, limit: 3}),
+  requestData('goods', {sort: 'sortAsc', category_id: '6a606770c2f86d512a7f5bd0', page: 1, limit: -1}),
   requestData('goods', {sort: 'sortAsc', category_id: '6a6067a0cd13e87ead2a9845', page: 1, limit: 4}),
   requestData('category', {sort: 'sortAsc', category_id: '6a65771ba6ba0c2e856b11c8'})
 ]);
 
 const productList = productRes?.data;
+
+// 缺少轮播图的分类复用首张可用产品图，避免分类点击找不到对应 slide。
+const productFallbackImage = productList.reduce((found: string, item: any) => {
+	if (found) return found;
+	return (item.swiper?.split(',') ?? []).map((src: string) => src.trim()).find(Boolean) || item.image_intro || '';
+}, '');
+
+// 把「分类 -> 多图」拍平成一维 slide 列表，每项记录所属分类下标 catIndex
+const productSlides = productList.flatMap((item, catIndex) => {
+	const imgs = (item.swiper?.split(',') ?? []).map((src: string) => src.trim()).filter(Boolean);
+	const srcList = imgs.length ? imgs : [item.image_intro || productFallbackImage];
+	return srcList.filter(Boolean).map((src: string) => ({
+		src,
+		catIndex,
+		title: item.title,
+		description: item.description
+	}));
+});
+const categoryFirstSlide: any = {};
+productSlides.forEach((slide: any,index: number) => {
+	if (categoryFirstSlide[slide.catIndex] === undefined) categoryFirstSlide[slide.catIndex] = index;
+})
+const canLoopProducts = productSlides.length >= 3;
+const canLoopProductThumbs = productList.length > 5;
+
 const brandTabs = brandRes?.data?.filter(item => item.showInHome);
 const caseList = caseRes?.data;
 const case2List = case2Res?.data;
@@ -64,27 +89,29 @@ const getTime = (time: number | string) => {
 							<img src="/img/arrow2.png" alt="">
 						</div>
 					</div>
-					{
-						productList?.[0] && <MoreBtn href={`/product/${productList?.[0]?.id}/1.html`}/>
-					}
+                  {
+                    productList?.[0] &&
+						  <MoreBtn href={`/product/${productList?.[0]?.id}/1.html`}/>
+                  }
 				</div>
 				<div class="right flex-1">
 					<div class="product-swiper">
 						<div class="swiper-wrapper">
                           {
-                            productList.map(item => (
-									<div class="swiper-slide relative interactive-card">
-										<img src={item.image_intro} alt="">
+                            productSlides.map((slide: any) => (
+									<div class="swiper-slide relative interactive-card" data-cat-index={slide.catIndex}>
+										<img src={slide.src} alt={slide.title}>
 										<div class="cate-info absolute">
-											<h5 class="cate-name">{item.title}</h5>
-											<p class="cate-desc">{item.description}</p>
+											<h5 class="cate-name">{slide.title}</h5>
+											<p class="cate-desc hide-more-text" title={slide.description}
+											   style="--lines: 8">{slide.description}</p>
 										</div>
 									</div>
                             ))
                           }
 						</div>
 					</div>
-					<div class="swiper-pagination flex align-center" thumbsSlider="">
+					<div class="swiper-pagination flex align-center">
 						<div class="swiper-wrapper">
                           {
                             productList.map((item, index) => (
@@ -110,7 +137,7 @@ const getTime = (time: number | string) => {
 				<div class="product-mobile__list">
                   {
                     productList.map(item => (
-							<a class="product-mobile__card" href={`/product/${productList?.[0]?.id}/1.html`}>
+							<a class="product-mobile__card" href={`/product/${item.id}/1.html`}>
                               {item.image_intro && <img src={item.image_intro} alt={item.title}>}
 								<div>
 									<h3>{item.title}</h3>
@@ -120,9 +147,11 @@ const getTime = (time: number | string) => {
                     ))
                   }
 				</div>
-				{
-					productList?.[0] && <a class="mobile-text-link" href={`/product/${productList?.[0]?.id}/1.html`}>浏览全部产品 <span aria-hidden="true">→</span></a>
-				}
+              {
+                productList?.[0] &&
+					  <a class="mobile-text-link" href={`/product/${productList?.[0]?.id}/1.html`}>浏览全部产品 <span
+							  aria-hidden="true">→</span></a>
+              }
 			</div>
 		</div>
 	</div>
@@ -183,15 +212,17 @@ const getTime = (time: number | string) => {
 			<div class="home-section-desktop">
 				<div class="left">
 					<HomeTitle title="行业实战案例" subtitle="industry practical case"/>
-					<div class="case-tab flex flex-column">
-                      {
-                        caseList.map((item, index) => (
-								<div class="tab-item relative flex align-center" data-index-number={index}>
-									<i>——&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
-									<span>{item.title}</span>
-								</div>
-                        ))
-                      }
+					<div class="case-tab case-tab-swiper swiper">
+						<div class="swiper-wrapper">
+                          {
+                            caseList.map((item, index) => (
+									<div class="tab-item swiper-slide relative flex align-baseline" data-index-number={index}>
+										<i>——&nbsp;&nbsp;&nbsp;&nbsp;</i>
+										<span>{item.title}</span>
+									</div>
+                            ))
+                          }
+						</div>
 					</div>
 					<MoreBtn href="/case.html?pageId=6a66c24ce39ec507d8232004"/>
 				</div>
@@ -309,17 +340,19 @@ const getTime = (time: number | string) => {
 							<div class="swiper-wrapper">
                               {
                                 articleList[item.id] && articleList[item.id].map((item2: any) => (
-								  <div class="swiper-slide interactive-card">
-									  <div class="info">
-										  <time class="date">{getTime(item2.create_time)}</time>
-										  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
-										  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
-										  <div class="arrow">
-											  <img src="/img/right-arraw.png" alt="" class="arrow">
-										  </div>
-									  </div>
-									{item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
-								  </div>
+											  <div class="swiper-slide interactive-card">
+												  <div class="info">
+													  <a href={`/newsDetails/${item2.id}.html`}>
+														  <time class="date">{getTime(item2.create_time)}</time>
+														  <h5 class="title hide-more-text" style="--lines: 2;">{item2.title}</h5>
+														  <p class="intro hide-more-text" style="--lines: 2;">{item2.intro}</p>
+														  <div class="arrow">
+															  <img src="/img/right-arraw.png" alt="" class="arrow">
+														  </div>
+													  </a>
+												  </div>
+                                                {item2.bg_img && <img class="absolute img" src={item2.bg_img} alt="">}
+											  </div>
                                 ))
                               }
 							</div>
@@ -349,36 +382,40 @@ const getTime = (time: number | string) => {
 				</div>
               {
                 articleTabs.map((item, index) => (
-					<div class="news-mobile__list" data-index-number={index}>
-					  {
-						articleList[item.id] && articleList[item.id].map((item2: any) => (
-						  <a class="news-mobile__card"
-							 href={`/newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
-							{
-							  item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
-							}
-							  <div class="news-mobile__card-content">
-								  <time>{getTime(item2.create_time)}</time>
-								  <h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
-								  <p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
-								  <span aria-hidden="true">→</span>
-							  </div>
-						  </a>
-						))
-					  }
-					</div>
+						<div class="news-mobile__list" data-index-number={index}>
+                          {
+                            articleList[item.id] && articleList[item.id].map((item2: any) => (
+										  <a class="news-mobile__card"
+										     href={`/newsDetails.html?id=${item2.id}&cateId=${item.id}`}>
+                                            {
+                                              item2.bg_img && <img src={item2.bg_img} alt={item2.title}>
+                                            }
+											  <div class="news-mobile__card-content">
+												  <time>{getTime(item2.create_time)}</time>
+												  <h3 class="hide-more-text" style="--lines: 2;">{item2.title}</h3>
+												  <p class="hide-more-text" style="--lines: 2;">{item2.intro}</p>
+												  <span aria-hidden="true">→</span>
+											  </div>
+										  </a>
+                            ))
+                          }
+						</div>
                 ))
               }
 
-				<a class="news-mobile__more" href={`/news/${articleTabs?.[0]?.id}/1`}>查看全部新闻 <span aria-hidden="true">→</span></a>
+				<a class="news-mobile__more" href={`/news/${articleTabs?.[0]?.id}/1`}>查看全部新闻 <span
+						aria-hidden="true">→</span></a>
 			</div>
 		</div>
 	</div>
 
 	<script is:inline src="/js/swiper-bundle.min.js"></script>
-	<script is:inline>
-      function setProductIndex(index = 0) {
-        $('.swiper-pagination-box').eq(index + 1).addClass('active').siblings().removeClass('active');
+	<script define:vars={{canLoopProducts, canLoopProductThumbs, productSlides, categoryFirstSlide}}>
+      // 分页条按分类下标定位。Swiper 11 的 loop 会重排真实 slide 节点，
+      // 用 .eq(n) 取到的是「当前 DOM 第 n 个」而非「第 n 个分类」，故一律走属性选择器。
+      function setProductIndex(catIndex = 0) {
+        $('.production-list .swiper-pagination-box').removeClass('active')
+          .filter('[data-index-number="' + catIndex + '"]').addClass('active');
       }
 
       function setBrandSwiperIndex(index = 0) {
@@ -406,19 +443,33 @@ const getTime = (time: number | string) => {
         $('.news-mobile__tabs button').eq(index).addClass('active').siblings().removeClass('active');
         $('.news-mobile__list').eq(index).addClass('active').siblings().removeClass('active');
       }
-
+	  
       (function () {
+        // 当前选中的产品分类下标。主轮播是「拍平后的图片列表」，
+        // 同一分类内部切图不应触发分页条移动，故需独立记录分类态。
+        let productCatIndex = 0;
+
+        // 分页条（缩略图条）与主轮播的 slide 数量不等（N 个分类 ↔ M 张图），
+        // 无法使用 Swiper 原生 thumbs（它要求一一对应），改为两个独立实例 + 手动联动。
         var productPageSwiper = new Swiper(".production-list .page-container .right .swiper-pagination", {
-          loop: true,
+          loop: canLoopProductThumbs,
           spaceBetween: 10,
           slidesPerView: 5,
           freeMode: true,
           watchSlidesProgress: true,
         });
+
+        function slideProductThumbsTo(index) {
+          if (!productPageSwiper) return;
+          if (productPageSwiper.params.loop) productPageSwiper.slideToLoop(index);
+          else productPageSwiper.slideTo(index);
+        }
+
         const productSwiper = new Swiper(".product-swiper", {
-          loop: true,
-          autoplay: true,
-          autoplayDisableOnInteraction: false,
+          loop: canLoopProducts,
+          autoplay: canLoopProducts ? {
+			  disableOnInteraction: false,
+		  } : false,
           slidesPerView: 1,
           spaceBetween: 16,
           breakpoints: {
@@ -431,21 +482,36 @@ const getTime = (time: number | string) => {
               spaceBetween: 0,
             },
           },
-          thumbs: {
-            swiper: productPageSwiper,
-          },
           navigation: {
             nextEl: ".production-list .swiper-button-next",
             prevEl: ".production-list .swiper-button-prev",
           },
           on: {
             init: (swiper) => {
-              setProductIndex(swiper.realIndex)
+              productCatIndex = productSlides[swiper.realIndex]?.catIndex ?? 0;
+              setProductIndex(productCatIndex);
             },
             slideChange: (swiper) => {
-              setProductIndex(swiper.realIndex)
+              // 主轮播是拍平后的图片列表，需反查所属分类；同分类内切图不动分页条，避免抖动
+              const catIndex = productSlides[swiper.realIndex]?.catIndex;
+              if (catIndex === undefined || catIndex === productCatIndex) return;
+              productCatIndex = catIndex;
+              setProductIndex(catIndex);
+              slideProductThumbsTo(catIndex);
             }
           }
+        });
+
+        // 切换产品分类：跳到该分类的首图
+        $('.production-list .swiper-pagination-box').on('click', function () {
+          const index = $(this).data('index-number');
+          const slideIndex = categoryFirstSlide[index];
+          if (slideIndex === undefined) return;
+          productCatIndex = index;
+          setProductIndex(index);
+          if (productSwiper.params.loop) productSwiper.slideToLoop(slideIndex);
+          else productSwiper.slideTo(slideIndex);
+          slideProductThumbsTo(index);
         });
 
         setBrandSwiperIndex(0);
@@ -459,13 +525,28 @@ const getTime = (time: number | string) => {
         brandSwiper.on('slideChange', () => {
           setBrandSwiperIndex(brandSwiper.activeIndex);
         })
-        $('.case-tab .tab-item').on('click', function () {
-          setBrandIndex($(this).data('index-number'));
-        });
         $('.brand-introduction .mobile-segment button').on('click', function () {
           setBrandIndex($(this).data('index-number'));
         });
 
+        const caseTabSwiper = new Swiper(".case-tab-swiper", {
+          direction: 'vertical',
+          slidesPerView: 3,
+          spaceBetween: 0,
+          // 不能开 loop：Swiper 循环模式会物理重排 slide 节点，
+          // 而这些节点由 Vue 的 keyed v-for 管理（active/v-show 每次切换都要 patch），
+          // 两者争抢 DOM 顺序会导致点击标题与实际选中项错位。
+          loop: false,
+          slideToClickedSlide: false,
+          allowTouchMove: true,
+          observer: true,
+          observeParents: true,
+          breakpoints: {
+            // 平板及以下改横排，与原横向滚动的视觉保持一致
+            0: {direction: 'horizontal', slidesPerView: 'auto', spaceBetween: 24},
+            1200: {direction: 'vertical', slidesPerView: 3, spaceBetween: 0},
+          },
+        });
         const caseSwiper = new Swiper(".case-swiper", {
           spaceBetween: 30,
           loop: true,
@@ -481,6 +562,9 @@ const getTime = (time: number | string) => {
             },
             slideChange: (swiper) => {
               setCaseSwiperIndex(swiper.realIndex)
+              if (!caseTabSwiper) return;
+              if (caseTabSwiper.params.loop) caseTabSwiper.slideToLoop(swiper.realIndex);
+              else caseTabSwiper.slideTo(swiper.realIndex);
             }
           }
         });

@@ -15,7 +15,10 @@ const {tabs = [], name = 'tabs'} = Astro.props;
 
 <script>
   (function (){
-      $('.tab-item').on('click', function (){
+      // 必须限定在 .my-tabs 内：页面上还有非本组件渲染的 .tab-item
+      // （如首页 .case .case-tab 的案例标题条），它们没有 data-name，
+      // 被误捕获会派发 name 为 undefined 的空事件。
+      $('.my-tabs .tab-item').on('click', function (){
         const index = $(this).data('index');
         const name = $(this).data('name');
         window.dispatchEvent(new CustomEvent('tab-change', {
